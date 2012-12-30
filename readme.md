@@ -6,7 +6,7 @@
 
 * 支持geoJSON格式的数据源
 
-* 通过Raphael默认地图，默认采用svg，低版本IE采用vml，兼容性较好
+* 通过Raphael绘制地图，默认采用svg，低版本IE采用vml，兼容性较好
 
 
 ## 文件结构
