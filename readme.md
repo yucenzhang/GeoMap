@@ -11,14 +11,14 @@
 
 ## 文件结构
 	
-	js/
+	jslib/						// 使用到的类库
 		jquery-1.8.2.min.js		// 大家都知道
 		raphael-min.js			// 很有名的矢量图类库
 		tuna.js					// 面向对象类库
 		
-	geomap/
+	geomap/						
 		geomap.js				// 封装GeoMap对象
-		json/
+		json/					// 地图数据
 			china.geo.json		// 中国地图数据
 			world.geo.json		// 世界地图数据
 	
@@ -31,8 +31,6 @@
 	// element: 放置map的位置，支持tagName/#id/.class
 	
 #### 渲染一张地图
-
-基本方法
 
 	// 渲染地图的参数
 	var config = {
@@ -50,7 +48,7 @@
 	// 渲染
 	map.render(config, callback);
 
-操作地图上的地区
+#### 操作地图上的地区
 	
 	// 实例化的GeoMap对象里，拥有一个mapPaths属性，其中记录了当前地图上的所有地区
 	map.render(function(){
