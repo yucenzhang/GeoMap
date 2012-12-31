@@ -16,7 +16,7 @@
 			var self = this;
 			self.superMethod();
 
-			self.container = $(container).css('background','#fff');
+			self.container = $(container);
 			self.width = w || self.container.width();
 			self.height = h || self.container.height();
 			self.canvas = Raphael(self.container.get(0), self.width, self.height);
@@ -35,23 +35,20 @@
 					'y' : 1
 				},
 				'style' : {
-					'fill' : '#eee', //'#CFEBF7',
+					'fill' : '#CFEBF7',
 					'stroke' : '#fff',
-					'stroke-width' : 0.5,
-					'stroke-linejoin' : 'round',
-					'cursor' : 'pointer'
+					'stroke-width' : 1,
+					'stroke-linejoin' : 'round'
 				}
 			};
 		},
 		
 		// 绘制地图
-		render : function(/* config, callback */){
+		render : function(){ /* 支持两个参数 config, callback */
 			var self = this,
 				canvas = self.canvas,
 				xhr,
-				sx,
-				sy,
-				argtype,
+				sx, sy, argtype,
 				callback = function(){},
 				config = {};
 
@@ -71,12 +68,10 @@
 			canvas.clear();
 			// 清空mapPaths
 			self.mapPaths = {};
-
-			var tem = {};
-			$.extend(true, tem, self.defaultConfig);
-			$.extend(true, tem, config);
-			config = tem;
-
+			
+			// 扩展设置
+			$.extend(true, self.defaultConfig, config);
+			config = self.defaultConfig;
 
 			canvas.text(self.width/2, self.height/2, '载入数据');
 
@@ -164,8 +159,7 @@
 					"fill": "#238CC3",
 					"stroke": "#238CC3",
 					"stroke-width": 0,
-					"stroke-linejoin": "round",
-					"cursor":"pointer"
+					"stroke-linejoin": "round"
 				},
 				x, y, c;
 				
@@ -186,8 +180,7 @@
 					"ps":[],
 					"stroke": "#238CC3",
 					"stroke-width": 0.5,
-					"stroke-linejoin": "round",
-					"cursor":"pointer"
+					"stroke-linejoin": "round"
 				},
 				d = [],
 				x, y, l;
@@ -232,7 +225,7 @@
 					// 将点数组转换为描述path的字符串
 					for(var u=0,l3=p.length;u<l3;u++){
 						// 调整地图位置，最左侧为美洲大陆最西端
-						// 每洲大陆最西端坐标为西经168.5°左右
+						// 美洲大陆最西端坐标约为西经168.5°左右
 						if(p[u][0]< -168.5){
 							p[u][0] = p[u][0] + 360;
 						}
