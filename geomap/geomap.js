@@ -19,7 +19,7 @@
 			self.container = $(container);
 			self.width = w || self.container.width();
 			self.height = h || self.container.height();
-			self.canvas = Raphael(self.container.get(0), self.width, self.height);
+			self.canvas = new Raphael(self.container.get(0), self.width, self.height);
 
 			// 记录地图上所有path的对象
 			self.mapPaths = {};
@@ -186,14 +186,15 @@
 				x, y, l;
 
 			$.extend(true, a, b);
-
+			
+			// 将点数组连接起来，形成线的path描述
 			for(var i=0, len=a.ps.length; i<len; i++){
 				x = (a.ps[i].x + self.offset.x) * self.scale.x;
 				y = (self.offset.y - a.ps[i].y) * self.scale.y;
 				d.push(x+','+y);
 			}
-
 			d = 'M' + d.join('L');
+			
 			l = self.canvas.path(d).attr(a);
 
 			return l;
