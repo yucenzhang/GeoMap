@@ -11,6 +11,8 @@
 
 ## 文件结构
 	
+	example.html				// 示例
+	
 	jslib/						// 使用到的类库
 		jquery-1.8.2.min.js		// 大家都知道
 		raphael-min.js			// 很有名的矢量图类库
