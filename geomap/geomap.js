@@ -19,6 +19,7 @@
 			self.container = $(container);
 			self.width = w || self.container.width();
 			self.height = h || self.container.height();
+			
 			self.canvas = new Raphael(self.container.get(0), self.width, self.height);
 
 			// 记录地图上所有path的对象
@@ -39,6 +40,11 @@
 					'stroke' : '#fff',
 					'stroke-width' : 1,
 					'stroke-linejoin' : 'round'
+				},
+				'loadingTxt' : {
+					'loading' : '载入数据',
+					'fail' : '数据载入失败',
+					'fill' : '#333'
 				}
 			};
 		},
@@ -72,8 +78,8 @@
 			// 扩展设置
 			$.extend(true, self.defaultConfig, config);
 			config = self.defaultConfig;
-
-			canvas.text(self.width/2, self.height/2, '载入数据');
+			
+			canvas.text(self.width/2, self.height/2, config.loadingTxt.loading).attr({fill:config.loadingTxt.fill});
 
 			xhr = $.ajax({
 				url: config.srcPath,
@@ -87,7 +93,6 @@
 				// 但是，geoJSON的标准格式不存在offset, 所以
 				// 对于没有经过处理的数据源 需要动态判断offset
 				if(!geoJSON.offset){
-					console.log(geoJSON);
 					var a = geoJSON.features,	//地区条目数组
 						x = 180,
 						y = 0,
@@ -142,7 +147,7 @@
 
 			}).fail(function(){
 				canvas.clear();
-				canvas.text(self.width/2, self.height/2, '地图数据载入失败！');
+				canvas.text(self.width/2, self.height/2, config.loadingTxt.fail).attr({fill:config.loadingTxt.fill});
 			});
 
 		},
