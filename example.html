@@ -12,8 +12,9 @@
 		<script type="text/javascript" src="geomap/geomap.js"></script>
 	</head>
 	<body style="background:#000;">
+		<p style="font-size:12px;color:#0c0">点击中国地图，可以看到更多示例<p>
 		<div id="text" style="width:100%;height:30px;color:#0c0"></div>
-		<div id="map" style="width:1000px;height:450px;margin:0 auto;"></div>
+		<div id="map" style="width:1000px;height:650px;margin:0 auto;"></div>
 		<script>
 			// 部分城市的坐标
 			var aCitys = {
@@ -96,7 +97,7 @@
 					linePoints.push(v);
 				});
 				map.setLine({
-					ps:linePoints,
+					'ps':linePoints,
 					'stroke' : '#0c0',
 					'stroke-width' : 0.6,
 					'stroke-linejoin' : 'round'
@@ -104,8 +105,9 @@
 				
 				// 点击中国，切换到中国地图
 				ps.China.click(function(){
+					$('p').html('');
 					config.srcPath = 'http://127.0.0.1/geomap/json/china.geo.json';
-					config.scale = {x:9,y:11};
+					config.scale = {x:10,y:13};
 					config.style['stroke-width'] = '1.2';
 					map.render(config, function(){
 						// 载入部分中国城市，画上点
@@ -113,24 +115,98 @@
 							url:'http://127.0.0.1/geomap/json/china.province.city.json',
 							dataType: 'json'
 						}).done(function(d){
+							// 画出中国的部分城市
+							setChinaCity(d);
+
+							// 中国城市动态连线
+							var linePoints = [];
 							$.each(d, function(k, v){
-								var c = map.setPoint({
+								linePoints.push({
 									'x':v.log*1,
-									'y':v.lat*1,
-									'r':2,
-									'stroke' : '#0c0',
-									'stroke-width' : 1,
-									'stroke-linejoin' : 'round',
-									'fill':"#0c0",
-									opacity:1					
+									'y':v.lat*1
 								});
-								c.glow({color:'#0c0'});
+							});
+							console.log(linePoints);
+							map.animateLine({
+								'ps':linePoints,
+								'stroke' : '#0c0',
+								'stroke-width' : 1.6,
+								'stroke-linejoin' : 'round'
 							});
 						});
 					});
 				});
 				
 			});
+			
+			// impl是tuna类库里的一个方法，用于给对象动态增加方法
+			// 这里使用impl方法，给GeoMap对象动态增加了一个动画方法，让若干条光线不停在各个城市间移动
+			GeoMap.impl({
+				animateLine : function(b){
+					var self = this,
+						a = {
+							"ps":[],
+							"stroke": "#238CC3",
+							"stroke-width": 1,
+							"stroke-linejoin": "round"
+						},
+						d = [],
+						x, y, l;
+		
+					$.extend(true, a, b);
+					
+					self.canvas.path()
+					
+					var ps = [];
+					// 将所有点的坐标都转换为当前地图平面坐标
+					for(var i=0, len=a.ps.length; i<len; i++){
+						ps[i] = {};
+						ps[i].x = (a.ps[i].x + self.offset.x) * self.scale.x;
+						ps[i].y = (self.offset.y - a.ps[i].y) * self.scale.y;
+					}
+					
+					aLine(0,200,a);
+					
+					aLine(1,200,a);
+					
+					aLine(2,200,a);
+					
+					aLine(3,200,a);
+					
+					function aLine(idx,spd,a){
+						var d = 'M' + ps[idx].x + ',' + ps[idx].y;
+						var l = self.canvas.path(d).attr(a);
+						
+						do{
+							
+							var next = Math.floor(Math.random()*(ps.length));
+							
+						}while(next == idx);
+
+						l.animate({path:d+'L'+ps[next].x+','+ps[next].y},spd,function(){
+							l.animate({path:'M'+ps[next].x+','+ps[next].y},spd);
+							aLine(next,spd,a);
+						});
+					}
+				}
+			});
+			
+			
+			function setChinaCity(d){
+				$.each(d, function(k, v){
+					var c = map.setPoint({
+						'x':v.log*1,
+						'y':v.lat*1,
+						'r':2,
+						'stroke' : '#0c0',
+						'stroke-width' : 1,
+						'stroke-linejoin' : 'round',
+						'fill':"#0c0",
+						opacity:1					
+					});
+					c.glow({color:'#0c0'});
+				});
+			}
 
 
 		</script>
