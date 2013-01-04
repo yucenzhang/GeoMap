@@ -13,43 +13,53 @@
 	</head>
 	<body style="background:#000;">
 		<div id="text" style="width:100%;height:30px;color:#0c0"></div>
-		<div id="map" style="width:1000px;height:550px;margin:0 auto;"></div>
+		<div id="map" style="width:1000px;height:450px;margin:0 auto;"></div>
 		<script>
-
-			var aCitys = {bj:{y:39.90,x:116.42},sh:{y:31.14,x:121.29},hk:{y:22.39,x:114.1},tb:{y:25.03,x:121.30},ny:{y:40.71435280,x:-74.00597309999999},sn:{y:-33.86748690,x:151.20699020}};
+			// 部分城市的坐标
+			var aCitys = {
+				la:{y:34.0396,x:-118.2661},
+				toronto:{y:43.6667,x:-79.4167},
+				ottawa:{y:45.4167,x:-75.7000},
+				ny:{y:40.71435280,x:-74.00597309999999},
+				mxgc:{y : 19.43260770,x : -99.1332080},
+				bynsals:{y : -34.60372320,x : -58.38159310},
+				brasilia:{y:-16.2119,x:-44.4308},
+				riodeJaneiro:{y : -22.90353930,x : -43.20958690},
+				madrid:{y:40.4086,x:-3.6922},
+				london:{y:51.5142,x:-0.0931},
+				amsterdam:{y:52.3500,x:4.9167},
+				paris:{y:48.8667,x:2.3333},
+				rome:{y:44.4833,x:11.3333},
+				Jerusalem:{y:31.7800,x:35.2300},
+				moscow:{y:55.7522,x:37.6156},	
+				bj:{y:39.90,x:116.42},
+				tokyo:{y:35.6850,x:139.7514},
+				sh:{y:31.14,x:121.29},
+				hk:{y:22.39,x:114.1},
+				taibei:{y:25.03,x:121.30},
+				sydney:{y:-33.86748690,x:151.20699020}
+			};
 			
 			// 创建地图画布
 			var map = GeoMap.create('#map');
 			
-			// 设置参数：地图路径数据和缩放倍数
+			// 设置参数：地图路径数据和缩放倍数，加载提示文字的颜色
 			var config = {
 				srcPath : 'http://127.0.0.1/geomap/json/world.geo.json',
                 scale : {x:2.7,y:3},
                 style : {
 					'fill' : '#000',
-					'stroke' : '#0c0',
-					'stroke-width' : 0.5,
+					'stroke' : '#070',
+					'stroke-width' : 0.8,
 					'stroke-linejoin' : 'round'
+				},
+				loadingTxt : {
+					'fill' : '#0c0'
 				}
 			};
 			
 			// 渲染地图
 			map.render(config, function(){
-				
-				// 在地图上标出一些城市
-				$.each(aCitys, function(k, v){
-					map.setPoint({
-						'x':v.x,
-						'y':v.y,
-						'r':3,
-						'stroke' : '#0c0',
-						'stroke-width' : 1.5,
-						'stroke-linejoin' : 'round',
-						'fill':"#000",
-						
-						opacity:1
-					});
-				});
 				
 				// 给地图各个区块设置鼠标经过事件
 				var ps = map.mapPaths;
@@ -62,6 +72,64 @@
 						this.attr(map.defaultConfig.style);
 					});
 				});
+				
+				// 在地图上标出一些城市
+				$.each(aCitys, function(k, v){
+					var c;
+					c = map.setPoint({
+						'x':v.x,
+						'y':v.y,
+						'r':1.5,
+						'stroke' : '#0c0',
+						'stroke-width' : 1.2,
+						'stroke-linejoin' : 'round',
+						'fill':"#000",
+						opacity:1
+					});
+					// 城市的标点增加泛光效果
+					c.glow({color : '#0c0'});
+				});
+				
+				// 将城市用线连起来
+				var linePoints = [];
+				$.each(aCitys, function(k ,v){
+					linePoints.push(v);
+				});
+				map.setLine({
+					ps:linePoints,
+					'stroke' : '#0c0',
+					'stroke-width' : 0.6,
+					'stroke-linejoin' : 'round'
+				});
+				
+				// 点击中国，切换到中国地图
+				ps.China.click(function(){
+					config.srcPath = 'http://127.0.0.1/geomap/json/china.geo.json';
+					config.scale = {x:9,y:11};
+					config.style['stroke-width'] = '1.2';
+					map.render(config, function(){
+						// 载入部分中国城市，画上点
+						$.ajax({
+							url:'http://127.0.0.1/geomap/json/china.province.city.json',
+							dataType: 'json'
+						}).done(function(d){
+							$.each(d, function(k, v){
+								var c = map.setPoint({
+									'x':v.log*1,
+									'y':v.lat*1,
+									'r':2,
+									'stroke' : '#0c0',
+									'stroke-width' : 1,
+									'stroke-linejoin' : 'round',
+									'fill':"#0c0",
+									opacity:1					
+								});
+								c.glow({color:'#0c0'});
+							});
+						});
+					});
+				});
+				
 			});
 
 
