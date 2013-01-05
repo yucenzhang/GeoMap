@@ -62,14 +62,11 @@
 			};
 		},
 		
-		// 载入提示
+		// 数据载入提示，画布正中显示
 		showLoadingTip : function(t){
 			var self = this,
 				canvas = self.canvas,
-				txt,
-				box,
-				w,
-				h;
+				txt, box, w, h;
 			
 			self.removeLoadingTip();
 			
@@ -88,8 +85,6 @@
 			
 			box.insertBefore(txt);
 			box.id = 'loadingTipBox';
-			
-			
 		},
 		removeLoadingTip : function(){
 			var self = this,
@@ -179,11 +174,9 @@
 					}
 				}
 				
-				console.log(geoJSON.offset);
-				
 				geoJSON.offset.x += config.translate.x;
 				geoJSON.offset.y += config.translate.y;
-				console.log(geoJSON.offset);
+
 				// 记录当前地图的偏移量和缩放倍数
 				self.offset = geoJSON.offset;
 				self.scale = config.scale;
