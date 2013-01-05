@@ -15,6 +15,12 @@
 		<p style="font-size:12px;color:#0c0">点击中国地图，可以看到更多示例<p>
 		<div id="text" style="width:100%;height:30px;color:#0c0"></div>
 		<div id="map" style="width:1000px;height:650px;margin:0 auto;"></div>
+		
+		<div style="font-size:16px;color:#0c0;line-height:20px;text-align:center;overflow:hidden;position:absolute;top:100px;">
+			<div id="up" style="width:20px;height:20px;border:1px solid #0c0;margin-bottom:5px;cursor:pointer;">+</div>
+			<div id="down" style="width:20px;height:20px;border:1px solid #0c0;cursor:pointer;">-</div>
+		</div>
+		
 		<script>
 			// 部分城市的坐标
 			var aCitys = {
@@ -58,6 +64,16 @@
 					'fill' : '#0c0'
 				}
 			};
+
+
+		    // 设置放大和缩小按钮
+			$('#up').click(function(){
+				map.viewScale('up');
+			});
+			$('#down').click(function(){
+				map.viewScale('down');
+			});
+			
 			
 			// 渲染地图
 			map.render(config, function(){
@@ -140,7 +156,8 @@
 			});
 			
 			// impl是tuna类库里的一个方法，用于给对象动态增加方法
-			// 这里使用impl方法，给GeoMap对象动态增加了一个动画方法，让若干条光线不停在各个城市间移动
+			// 这里使用impl方法，给GeoMap对象动态增加了一个动画方法animateLine
+			// 调用该方法，可以让若干条光线不停在各个城市间移动
 			GeoMap.impl({
 				animateLine : function(b){
 					var self = this,
@@ -165,24 +182,20 @@
 						ps[i].y = (self.offset.y - a.ps[i].y) * self.scale.y;
 					}
 					
+					// 画出四条光线
 					aLine(0,200,a);
-					
 					aLine(1,200,a);
-					
 					aLine(2,200,a);
-					
 					aLine(3,200,a);
 					
+					// 先确定一个点，然后随机出下一个点的位置，用raphael的animate方法连接两个点，用回调函数重复这一过程
+					// idx是出发点，这个点不太重要，因为后面是什么点都是随机的
 					function aLine(idx,spd,a){
 						var d = 'M' + ps[idx].x + ',' + ps[idx].y;
 						var l = self.canvas.path(d).attr(a);
-						
 						do{
-							
 							var next = Math.floor(Math.random()*(ps.length));
-							
 						}while(next == idx);
-
 						l.animate({path:d+'L'+ps[next].x+','+ps[next].y},spd,function(){
 							l.animate({path:'M'+ps[next].x+','+ps[next].y},spd);
 							aLine(next,spd,a);

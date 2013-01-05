@@ -19,6 +19,14 @@
 			self.container = $(container);
 			self.width = w || self.container.width();
 			self.height = h || self.container.height();
+
+			// 记录可视区域的状态
+			self.viewBox = {
+				a : 0,	// 可视区域x轴偏移
+				b : 0,	// 可视区域y轴偏移
+				w : self.width,	// 可视区域宽
+				h : self.height	// 可视区域高
+			};
 			
 			self.canvas = new Raphael(self.container.get(0), self.width, self.height);
 
@@ -141,7 +149,10 @@
 					p.scale(sx, sy, 0, 0);
 					self.mapPaths[k] = p;
 				});
-
+				
+				// 在放大情况下，允许拖动地图
+				self.dragMove();
+				
 				// 执行render的回调函数
 				callback();
 
@@ -150,6 +161,97 @@
 				canvas.text(self.width/2, self.height/2, config.loadingTxt.fail).attr({fill:config.loadingTxt.fill});
 			});
 
+		},
+		
+		// 绑定拖动
+		dragMove : function(){
+			var self = this,
+				v = self.viewBox,
+				c = $(self.canvas.canvas),
+				bool = false,
+				oX = 0,
+				oY = 0;
+			c.on('mousedown',down).on('mouseup',up).on('mousemove',move);
+
+			// 通过mouse的down、up、move方法来实现拖拽事件
+			// 通过Raphael的setViewBox方法，挪动可视区域，实现拖拽地图的效果
+			function down(e){
+				bool = true;
+				oX = e.clientX;
+				oY = e.clientY;
+				$(this).css('cursor','move');
+			}
+			function up(){
+				bool = false;
+				$(this).css('cursor','default');
+			}
+			function move(e){
+				if(!bool){
+					return false;
+				}
+				v.a = checkRange(v.a, e.clientX, oX, self.width, v.w);
+				v.b = checkRange(v.b, e.clientY, oY, self.height, v.h);
+				oX = e.clientX;
+				oY = e.clientY;
+				self.canvas.setViewBox(v.a, v.b, v.w, v.h);
+				// 拖拽不能超出地图原有范围
+				function checkRange(v, c, o, s, t){
+					var x = v - (c - o)/2;
+					if(x <= 0 || x >= s - t){
+						return v;
+					}
+					return x;
+				}
+			}
+
+		},
+		
+		// 缩放
+		viewScale : function(type){
+			var self = this,
+				v = self.viewBox,
+				w = v.w,
+				h = v.h,
+				a = v.a,
+				b = v.b,
+				s = 1;
+
+			switch(type){
+				case 'up':
+					s += 0.2;
+					break;
+				case 'down':
+					s -= 0.2;
+					break;
+				default:
+					return false;
+					break;
+			}
+            v.w = v.w / s;
+            v.h = v.h / s;
+			v.a = v.a + (w - v.w)/2;
+            v.b = v.b + (h - v.h)/2;
+
+			// 边界条件 放大倍数不能大于2 原大时不能缩小
+			if(s > 1 && v.w < self.width / 2){
+				v.w = w;
+				v.h = h;
+				v.a = a;
+				v.b = b;
+			}else if(s < 1 && v.w > self.width){
+				v.w = self.width;
+				v.h = self.height;
+				v.a = 0;
+				v.b = 0;
+			}
+			// 如果放大或缩小时，某个边界超出原有画布 则强制收敛回来
+			if(v.a < 0) v.a = 0;
+			if(v.b < 0) v.b = 0;
+			if(v.a > (self.width - v.w)) v.a = self.width - v.w;
+			if(v.b > (self.width - v.h)) v.b = self.height - v.h;
+
+			// 使用setViewBox方法，实现缩放
+			self.canvas.setViewBox(v.a, v.b, v.w, v.h);
 		},
 		
 		// 画点
