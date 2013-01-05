@@ -180,7 +180,7 @@
 				// 记录当前地图的偏移量和缩放倍数
 				self.offset = geoJSON.offset;
 				self.scale = config.scale;
-
+				
 				// 格式化json数据
 				geoJSON = self.formatGeoJSON(geoJSON);
 
@@ -388,7 +388,9 @@
 				}
 				d[s] = r.join('');
 			}
+			$('body').append('<div>'+JSON.stringify(d)+'</div>');
 			return d;
+			
 		}
 
 	});

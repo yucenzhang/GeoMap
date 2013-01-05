@@ -52,7 +52,7 @@
 			
 			// 设置参数：地图路径数据和缩放倍数，加载提示文字的颜色
 			var config = {
-				srcPath : 'http://127.0.0.1/geomap/json/world.geo.json',
+				srcPath : '/geomap/json/world.geo.json',
                 scale : {x:2.7,y:3},
                 style : {
 					'fill' : '#000',
@@ -122,14 +122,14 @@
 				// 点击中国，切换到中国地图
 				ps.China.click(function(){
 					$('p').html('');
-					config.srcPath = 'http://127.0.0.1/geomap/json/china.geo.json';
+					config.srcPath = '/geomap/json/china.geo.json';
 					config.scale = {x:9,y:12};
-					config.translate = {x:10,y:0};
+					config.translate = {x:0,y:0};
 					config.style['stroke-width'] = '1.2';
 					map.render(config, function(){
 						// 载入部分中国城市，画上点
 						$.ajax({
-							url:'http://127.0.0.1/geomap/json/china.province.city.json',
+							url:'/geomap/json/china.province.city.json',
 							dataType: 'json'
 						}).done(function(d){
 							// 画出中国的部分城市
@@ -143,7 +143,7 @@
 									'y':v.lat*1
 								});
 							});
-							console.log(linePoints);
+
 							map.animateLine({
 								'ps':linePoints,
 								'stroke' : '#0c0',
