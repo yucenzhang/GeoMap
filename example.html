@@ -48,7 +48,7 @@
 			};
 			
 			// 创建地图画布
-			var map = GeoMap.create('#map');
+			var map = GeoMap.create('#map', 1000, 450);
 			
 			// 设置参数：地图路径数据和缩放倍数，加载提示文字的颜色
 			var config = {
@@ -123,7 +123,8 @@
 				ps.China.click(function(){
 					$('p').html('');
 					config.srcPath = 'http://127.0.0.1/geomap/json/china.geo.json';
-					config.scale = {x:10,y:13};
+					config.scale = {x:9,y:12};
+					config.translate = {x:10,y:0};
 					config.style['stroke-width'] = '1.2';
 					map.render(config, function(){
 						// 载入部分中国城市，画上点

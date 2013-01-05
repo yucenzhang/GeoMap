@@ -43,6 +43,11 @@
 					'x' : 1,
 					'y' : 1
 				},
+				// 设置平移量，以便让地图放在合适的位置
+				'translate' : {
+					'x' : 0,
+					'y' : 0
+				},
 				'style' : {
 					'fill' : '#CFEBF7',
 					'stroke' : '#fff',
@@ -55,6 +60,46 @@
 					'fill' : '#333'
 				}
 			};
+		},
+		
+		// 载入提示
+		showLoadingTip : function(t){
+			var self = this,
+				canvas = self.canvas,
+				txt,
+				box,
+				w,
+				h;
+			
+			self.removeLoadingTip();
+			
+			txt = canvas.text(self.width/2, self.height/2, t).attr({
+				'fill':'#fff',
+				'font-size':'12px'
+			});
+			txt.id = 'loadingTip';
+			
+			w = txt.node.clientWidth;
+			h = txt.node.clientHeight;
+			
+			box = canvas.rect((self.width - w)/2, (self.height - h)/2, w, h).attr({
+				'fill':'#000'
+			});
+			
+			box.insertBefore(txt);
+			box.id = 'loadingTipBox';
+			
+			
+		},
+		removeLoadingTip : function(){
+			var self = this,
+				tip = self.canvas.getById('loadingTip'),
+				box = self.canvas.getById('loadingTipBox');
+
+			if(tip){
+				tip.remove();
+				box.remove();
+			}
 		},
 		
 		// 绘制地图
@@ -87,7 +132,7 @@
 			$.extend(true, self.defaultConfig, config);
 			config = self.defaultConfig;
 			
-			canvas.text(self.width/2, self.height/2, config.loadingTxt.loading).attr({fill:config.loadingTxt.fill});
+			self.showLoadingTip('载入数据...');
 
 			xhr = $.ajax({
 				url: config.srcPath,
@@ -133,6 +178,12 @@
 						};
 					}
 				}
+				
+				console.log(geoJSON.offset);
+				
+				geoJSON.offset.x += config.translate.x;
+				geoJSON.offset.y += config.translate.y;
+				console.log(geoJSON.offset);
 				// 记录当前地图的偏移量和缩放倍数
 				self.offset = geoJSON.offset;
 				self.scale = config.scale;
@@ -147,9 +198,10 @@
 				$.each(geoJSON,function(k,v){
 					var p = canvas.path(v).attr(config.style);
 					p.scale(sx, sy, 0, 0);
+
 					self.mapPaths[k] = p;
 				});
-				
+
 				// 在放大情况下，允许拖动地图
 				self.dragMove();
 				
@@ -158,7 +210,7 @@
 
 			}).fail(function(){
 				canvas.clear();
-				canvas.text(self.width/2, self.height/2, config.loadingTxt.fail).attr({fill:config.loadingTxt.fill});
+				self.showLoadingTip('载入失败!');
 			});
 
 		},
