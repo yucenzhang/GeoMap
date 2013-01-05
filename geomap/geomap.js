@@ -191,7 +191,6 @@
 				$.each(geoJSON,function(k,v){
 					var p = canvas.path(v).attr(config.style);
 					p.scale(sx, sy, 0, 0);
-
 					self.mapPaths[k] = p;
 				});
 
@@ -319,7 +318,7 @@
 
 			x = (a.x + self.offset.x) * self.scale.x;
 			y = (self.offset.y - a.y) * self.scale.y;
-
+			
 			c = self.canvas.circle(x, y, a.r).attr(a);
 
 			return c;
@@ -361,7 +360,15 @@
 				y = g.offset.y,	// y轴偏移量
 				d = {},	// 对象返回值：地区->路径字符串
 				s, o, r, p;	// 临时变量不重要
-
+			
+			// IE8绘制vml，中国地图（包括中国地区图）板块会向左上偏移，但画点或线则不偏移
+			// 检查路径描述，和绘制svg时一致
+			// 偏移仍在查找，暂时通过增加判断，强制消除偏移问题
+			if(!Raphael.svg && g.offset.x != 170){
+				x += 1.25;
+				y += 1.55;
+			}
+			
 			for(var i = 0, len = a.length; i < len; i++){
 				s = a[i].properties.name;
 				o = a[i].geometry;
@@ -388,7 +395,6 @@
 				}
 				d[s] = r.join('');
 			}
-			$('body').append('<div>'+JSON.stringify(d)+'</div>');
 			return d;
 			
 		}
