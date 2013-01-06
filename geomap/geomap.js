@@ -184,13 +184,15 @@
 				// 格式化json数据
 				geoJSON = self.formatGeoJSON(geoJSON);
 
-				sx = config.scale.x;
-				sy = config.scale.y;
+				sx = self.scale.x;
+				sy = self.scale.y;
 
 				// 绘制path
 				$.each(geoJSON,function(k,v){
 					var p = canvas.path(v).attr(config.style);
-					p.scale(sx, sy, 0, 0);
+					// 使用scale方法，在ie8下出现bug，so：
+					// 初始化的缩放，改在格式化geoJSON数据时，直接将点坐标的值乘以缩放倍数
+					// p.scale(sx, sy, 0, 0);
 					self.mapPaths[k] = p;
 				});
 
@@ -215,7 +217,7 @@
 				bool = false,
 				oX = 0,
 				oY = 0;
-			c.on('mousedown',down).on('mouseup',up).on('mousemove',move);
+			c.on('mousedown', down).on('mouseup', up).on('mousemove', move);
 
 			// 通过mouse的down、up、move方法来实现拖拽事件
 			// 通过Raphael的setViewBox方法，挪动可视区域，实现拖拽地图的效果
@@ -354,26 +356,29 @@
 
 		// 格式化地理数据，构成path描述
 		formatGeoJSON : function(g){
-
+			var self = this;
 			var a = g.features,	// 地区条目数组
 				x = g.offset.x,	// x轴偏移量
 				y = g.offset.y,	// y轴偏移量
 				d = {},	// 对象返回值：地区->路径字符串
 				s, o, r, p;	// 临时变量不重要
 			
+			// XX:此方法暂弃
 			// IE8绘制vml，中国地图（包括中国地区图）板块会向左上偏移，但画点或线则不偏移
 			// 检查路径描述，和绘制svg时一致
 			// 偏移仍在查找，暂时通过增加判断，强制消除偏移问题
+			/*
 			if(!Raphael.svg && g.offset.x != 170){
 				x += 1.25;
 				y += 1.55;
 			}
+			*/
 			
 			for(var i = 0, len = a.length; i < len; i++){
 				s = a[i].properties.name;
 				o = a[i].geometry;
 				r = o.coordinates;
-				for(var j=0,l2=r.length;j<l2;j++){
+				for(var j = 0, l2 = r.length; j < l2; j++){
 
 					// 判断数据结构，取出点数组的值
 					if(o.type == 'Polygon'){
@@ -383,13 +388,14 @@
 					}
 
 					// 将点数组转换为描述path的字符串
-					for(var u=0,l3=p.length;u<l3;u++){
+					for(var u = 0, l3 = p.length; u < l3; u++){
 						// 调整地图位置，最左侧为美洲大陆最西端
 						// 美洲大陆最西端坐标约为西经168.5°左右
-						if(p[u][0]< -168.5){
+						if(p[u][0] < -168.5){
 							p[u][0] = p[u][0] + 360;
 						}
-						p[u] = (p[u][0] + x) + ',' + (y - p[u][1]);
+						// 初始化的缩放，在此处通过乘法直接执行，不再调用scale方法
+						p[u] = (p[u][0] + x) * self.scale.x + ',' + (y - p[u][1])*self.scale.y;
 					}
 					r[j] = 'M' + p.join('L') + 'z';
 				}
