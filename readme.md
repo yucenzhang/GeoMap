@@ -2,7 +2,7 @@
 
 ## 概述
 
-* GeoMap.js是一个绘制矢量地图的JavaScript控件，基于jQuery、Raphael、Tuna这三个类库
+* GeoMap.js是一个绘制矢量地图的sea.js模块，基于jQuery、Raphael，
 
 * 支持geoJSON格式的数据源
 
@@ -11,25 +11,21 @@
 
 ## 文件结构
 	
-	example.html				// 示例
-	
-	jslib/						// 使用到的类库
-		jquery-1.8.2.min.js		// 大家都知道
-		raphael-min.js			// 很有名的矢量图类库
-		tuna.js					// 面向对象类库
-		
-	geomap/						
-		geomap.js				// 封装GeoMap对象
-		json/					// 地图数据
-			china.geo.json		// 中国地图数据
-			world.geo.json		// 世界地图数据
+	china.json			// 中国地图数据
+	geomap.js			// 模块压缩文件
+	geomap.debug.js	// 模块源文件
 	
 
 ## 使用方法
 
+#### 使用sea.js加载
+	
+	//需要先加载jquery和raphael模块
+	var GeoMap = require('(路径)/geomap');
+
 #### 实例化一个GeoMap对象
 	
-	var map = GeoMap.create(element, width, height);
+	var map = new GeoMap(element, width, height);
 	// element: 放置map的位置，支持tagName/#id/.class
 	
 #### 渲染一张地图
