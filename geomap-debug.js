@@ -157,6 +157,12 @@ define("geomap/geomap/1.0.0/geomap-debug", [ "gallery/jquery/1.8.3/jquery-debug"
                         // 使用scale方法，在ie8下出现bug，so：
                         // 初始化的缩放，改在格式化geoJSON数据时，直接将点坐标的值乘以缩放倍数
                         // p.scale(sx, sy, 0, 0);
+                        //给每个path元素增加属性，标注地名
+                        $(p.node).attr({
+                            "class": "map-path",
+                            "path-name": k
+                        });
+                        //通过数组缓存raphael的图形对象
                         self.mapPaths[k] = p;
                     });
                     // 在放大情况下，允许拖动地图
