@@ -1,3 +1,11 @@
+/*
+ * GeoMap v0.2
+ * https://github.com/x6doooo/GeoMap
+ *
+ * Copyright 2013 Dx. Yang
+ * Released under the MIT license
+ */
+
 (function($){
   var DrewShape = {
     "ox": 0,
@@ -56,7 +64,6 @@
     "GeometryCollection": function(){}
   };
 
-
   var GeoMap = function(cfg){
     var self = this;
 
@@ -99,7 +106,7 @@
         scaley = self.scale.y;
 
       paths.forEach(function(path){
-        aPath = canvas.path(path.path).attr(style).scale(scalex, scaley, 0, 0);
+        aPath = canvas.path(path.path).attr(style).scale(scalex, scaley, 0, 0).data('properties', path.properties);
         self.shapes.push(aPath);
       });
     },
@@ -122,7 +129,7 @@
           pathArray.push({
             type: shapeType,
             path: str,
-            property: shape.geometry.properties
+            properties: shape.properties
           });
         }else if(shape.type = 'GeometryCollection'){
           geometries = shape.geometries;
@@ -133,7 +140,7 @@
             pathArray.push({
               type: shapeType,
               path: str,
-              property: val.properties
+              properties: val.properties
             });
           });
         }

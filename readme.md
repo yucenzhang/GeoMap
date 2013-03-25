@@ -1,4 +1,4 @@
-# GeoMap.js `beta2`
+# GeoMap.js
 
 ## 概述
 
@@ -68,6 +68,11 @@
         }
 	});
 	
+属性绑定：
+
+	//通过Raphael的data方法绑定地区的属性
+	
 操作地图上的区块：
 	
+	todo
 	

@@ -19,6 +19,9 @@
 			<div id="up" style="width:20px;height:20px;border:1px solid #0c0;margin-bottom:5px;cursor:pointer;">+</div>
 			<div id="down" style="width:20px;height:20px;border:1px solid #0c0;cursor:pointer;">-</div>
 		</div-->
+
+		<div id="tooltip" style="position:absolute;padding:10px;background:#fff;border:5px solid #708090;display:none;">
+		</div>
 		
 		<script>
 			// 部分城市的坐标
@@ -51,6 +54,7 @@
 				url: 'json/world.geo.json',
 				dataType: 'json'
 			}).done(function(data){
+				console.log(data);
 				var map = new GeoMap({
 					container:'#map',
 					offset: {
@@ -61,17 +65,27 @@
 						x: 2.5,
 						y: 3
 					}
-				});
+				}),
+				tooltip = $('#tooltip');
 				map.load(data);
 				map.render();
-				map.shapes.hover(function(){
-					this.animate({
+				map.shapes.hover(function(e){
+					var self = this;
+					self.animate({
 						fill: '#369'
 					},100);
 				},function(){
 					this.animate({
 						fill: '#fff'
 					},100)
+				}).mousemove(function(e){
+					var self = this;
+					tooltip.html(self.data('properties').name).css({
+						"top":e.clientY + 20,
+						"left":e.clientX + 20
+					}).show();
+				}).mouseout(function(){
+					tooltip.empty().hide();
 				});
 			});
 		</script>
