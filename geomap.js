@@ -67,8 +67,8 @@
       offset: {},
       scale:{},
       mapStyle: {
-        'fill': '#000',
-        'stroke': '#0c0',
+        'fill': '#fff',
+        'stroke': '#999',
         'stroke-width': 0.7
       }
     };
@@ -111,10 +111,8 @@
         shapeCoordinates,
         str,
         pathArray = [];
-
       DrewShape.ox = offset.x || 0;
       DrewShape.oy = offset.y || 0;
-
       shapes.forEach(function(shape, idx, arr){
         if(shape.type !== 'Feature') return;
         shapeType = shape.geometry.type;

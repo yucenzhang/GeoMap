@@ -10,15 +10,15 @@
 		<script type="text/javascript" src="../raphael/raphael-min.js"></script>
 		<script type="text/javascript" src="geomap.js"></script>
 	</head>
-	<body style="background:#000;">
-		<p style="font-size:12px;color:#0c0">点击中国地图，可以看到更多示例<p>
-		<div id="text" style="width:100%;height:30px;color:#0c0"></div>
+	<body style="background:#E4E6E1;">
+		<!--p style="font-size:12px;color:#0c0">点击中国地图，可以看到更多示例<p>
+		<div id="text" style="width:100%;height:30px;color:#0c0"></div-->
 		<div id="map" style="width:1000px;height:650px;margin:0 auto;"></div>
 		
-		<div style="font-size:16px;color:#0c0;line-height:20px;text-align:center;overflow:hidden;position:absolute;top:100px;">
+		<!--div style="font-size:16px;color:#0c0;line-height:20px;text-align:center;overflow:hidden;position:absolute;top:100px;">
 			<div id="up" style="width:20px;height:20px;border:1px solid #0c0;margin-bottom:5px;cursor:pointer;">+</div>
 			<div id="down" style="width:20px;height:20px;border:1px solid #0c0;cursor:pointer;">-</div>
-		</div>
+		</div-->
 		
 		<script>
 			// 部分城市的坐标
@@ -65,13 +65,13 @@
 				map.load(data);
 				map.render();
 				map.shapes.hover(function(){
-					this.attr({
-						fill: '#0c0'
-					});
+					this.animate({
+						fill: '#369'
+					},100);
 				},function(){
-					this.attr({
-						fill: '#000'
-					})
+					this.animate({
+						fill: '#fff'
+					},100)
 				});
 			});
 		</script>
