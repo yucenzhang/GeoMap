@@ -110,19 +110,33 @@
         shapeType,
         shapeCoordinates,
         str,
+        geometries,
         pathArray = [];
       DrewShape.ox = offset.x || 0;
       DrewShape.oy = offset.y || 0;
       shapes.forEach(function(shape, idx, arr){
-        if(shape.type !== 'Feature') return;
-        shapeType = shape.geometry.type;
-        shapeCoordinates = shape.geometry.coordinates;
-        str = DrewShape[shapeType](shapeCoordinates);
-        pathArray.push({
-          type: shapeType,
-          path: str,
-          property: shape.geometry.properties
-        });
+        if(shape.type == 'Feature'){
+          shapeType = shape.geometry.type;
+          shapeCoordinates = shape.geometry.coordinates;
+          str = DrewShape[shapeType](shapeCoordinates);
+          pathArray.push({
+            type: shapeType,
+            path: str,
+            property: shape.geometry.properties
+          });
+        }else if(shape.type = 'GeometryCollection'){
+          geometries = shape.geometries;
+          geometries.forEach(function(val){
+            shapeType = val.type;
+            shapeCoordinates = val.coordinates;
+            str = DrewShape[shapeType](shapeCoordinates);
+            pathArray.push({
+              type: shapeType,
+              path: str,
+              property: val.properties
+            });
+          });
+        }
       });
       return pathArray;
     }
