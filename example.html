@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title> GeoMap.js </title>
+		<meta name="description" content="XXX" />
+		<meta name="keywords" content="k1,k2" />
+		<meta name="author" content="Tim Yang" />
+		<script type="text/javascript" src="jslib/jquery-1.8.2.min.js"></script>
+		<script type="text/javascript" src="jslib/tuna.js"></script>
+		<script type="text/javascript" src="jslib/raphael-min.js"></script>
+		<script type="text/javascript" src="geomap/geomap.js"></script>
+	</head>
+	<body style="background:#000;">
+		<p style="font-size:12px;color:#0c0">点击中国地图，可以看到更多示例<p>
+		<div id="text" style="width:100%;height:30px;color:#0c0"></div>
+		<div id="map" style="width:1000px;height:650px;margin:0 auto;"></div>
+		
+		<div style="font-size:16px;color:#0c0;line-height:20px;text-align:center;overflow:hidden;position:absolute;top:100px;">
+			<div id="up" style="width:20px;height:20px;border:1px solid #0c0;margin-bottom:5px;cursor:pointer;">+</div>
+			<div id="down" style="width:20px;height:20px;border:1px solid #0c0;cursor:pointer;">-</div>
+		</div>
+		
+		<script>
+			// 部分城市的坐标
+			var aCitys = {
+				la:{y:34.0396,x:-118.2661},
+				toronto:{y:43.6667,x:-79.4167},
+				ottawa:{y:45.4167,x:-75.7000},
+				ny:{y:40.71435280,x:-74.00597309999999},
+				mxgc:{y : 19.43260770,x : -99.1332080},
+				bynsals:{y : -34.60372320,x : -58.38159310},
+				brasilia:{y:-16.2119,x:-44.4308},
+				riodeJaneiro:{y : -22.90353930,x : -43.20958690},
+				madrid:{y:40.4086,x:-3.6922},
+				london:{y:51.5142,x:-0.0931},
+				amsterdam:{y:52.3500,x:4.9167},
+				paris:{y:48.8667,x:2.3333},
+				rome:{y:44.4833,x:11.3333},
+				Jerusalem:{y:31.7800,x:35.2300},
+				moscow:{y:55.7522,x:37.6156},	
+				bj:{y:39.90,x:116.42},
+				tokyo:{y:35.6850,x:139.7514},
+				sh:{y:31.14,x:121.29},
+				hk:{y:22.39,x:114.1},
+				taibei:{y:25.03,x:121.30},
+				sydney:{y:-33.86748690,x:151.20699020}
+			};
+			
+			// 创建地图画布
+
+			$.ajax({
+				url: 'json/world.geo.json',
+				dataType: 'json'
+			}).done(function(data){
+
+				console.log(data);
+
+				var map = new GeoMap({container:'#map'});
+				map.load(data);
+				map.render();
+
+			});
+			
+
+
+
+		</script>
+	</body>
+</html>
+

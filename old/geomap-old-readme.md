@@ -1,8 +1,8 @@
-# GeoMap.js
+# GeoMap.js（旧版使用说明）
 
 ## 概述
 
-* GeoMap.js是一个绘制矢量地图的sea.js模块，基于jQuery、Raphael，
+* GeoMap.js是一个绘制矢量地图控件，基于jQuery、Raphael，
 
 * 支持geoJSON格式的数据源
 
