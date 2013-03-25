@@ -9,10 +9,19 @@
 (function($){
 
   var convertor = {
+    "xmin": 360,
+    "xmax": 0,
+    "ymin": 180,
+    "ymax": 0,
     "makePoint": function(p){
       var self = this,
           x = (p[0] < -168.5 ? p[0] + 360 : p[0]) + 170,
           y = (90 - p[1]);
+
+      if(self.xmin > x) self.xmin = x;
+      if(self.xmax < x) self.xmax = x;
+      if(self.ymin > y) self.ymin = y;
+      if(self.ymax < y) self.ymax = y;
 
       return [x, y];
     },
@@ -66,12 +75,8 @@
     var self = this,
         defaultCfg = {
           container: 'body',
-          offset: {
-            x: 0, y: 0
-          },
-          scale:{
-            x: 0, y: 0
-          },
+          offset: null,
+          scale: null,
           mapStyle: {
             'fill': '#fff',
             'stroke': '#999',
@@ -108,8 +113,24 @@
         width = self.width,
         height = self.height;
 
+      if(!scale){
+        scale = {
+          x: 1, y: 1
+        };
+      }
+
+      if(!offset){
+        offset = {
+          x: convertor.xmin * scale.x,
+          y: convertor.ymin * scale.y
+        };
+      }
+
       paths.forEach(function(path){
-        aPath = canvas.path(path.path).attr(style).scale(scale.x, scale.y, 0, 0).data('properties', path.properties);
+        if(path.type == 'point' || path.type == 'MultiPoint'){
+        }else{
+          aPath = canvas.path(path.path).attr(style).scale(scale.x, scale.y, 0, 0).data('properties', path.properties);
+        }
         self.shapes.push(aPath);
       });
 
@@ -124,30 +145,31 @@
         geometries,
         pathArray = [];
 
+      convertor.xmin= 360;
+      convertor.xmax = 0;
+      convertor.ymin = 180;
+      convertor.ymax = 0;
+
       shapes.forEach(function(shape, idx, arr){
         if(shape.type == 'Feature'){
-          shapeType = shape.geometry.type;
-          shapeCoordinates = shape.geometry.coordinates;
-          str = convertor[shapeType](shapeCoordinates);
-          pathArray.push({
-            type: shapeType,
-            path: str,
-            properties: shape.properties
-          });
+          pushApath(shape.geometry, shape);
         }else if(shape.type = 'GeometryCollection'){
           geometries = shape.geometries;
           geometries.forEach(function(val){
-            shapeType = val.type;
-            shapeCoordinates = val.coordinates;
-            str = convertor[shapeType](shapeCoordinates);
-            pathArray.push({
-              type: shapeType,
-              path: str,
-              properties: val.properties
-            });
+            pushApath(val, val);
           });
         }
       });
+      function pushApath(gm, shape){
+        shapeType = gm.type;
+        shapeCoordinates = gm.coordinates;
+        str = convertor[shapeType](shapeCoordinates);
+        pathArray.push({
+          type: shapeType,
+          path: str,
+          properties: shape.properties
+        });
+      }
       return pathArray;
     }
   };
