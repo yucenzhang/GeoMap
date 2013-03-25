@@ -1,4 +1,4 @@
-# GeoMap.js	<sup style="font-size:14px">beta2</sup>
+# GeoMap.js `beta2`
 
 ## 概述
 
