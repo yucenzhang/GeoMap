@@ -6,10 +6,9 @@
 		<meta name="description" content="XXX" />
 		<meta name="keywords" content="k1,k2" />
 		<meta name="author" content="Tim Yang" />
-		<script type="text/javascript" src="jslib/jquery-1.8.2.min.js"></script>
-		<script type="text/javascript" src="jslib/tuna.js"></script>
-		<script type="text/javascript" src="jslib/raphael-min.js"></script>
-		<script type="text/javascript" src="geomap/geomap.js"></script>
+		<script type="text/javascript" src="../jslib/jquery-1.8.2.min.js"></script>
+		<script type="text/javascript" src="../raphael/raphael-min.js"></script>
+		<script type="text/javascript" src="geomap.js"></script>
 	</head>
 	<body style="background:#000;">
 		<p style="font-size:12px;color:#0c0">点击中国地图，可以看到更多示例<p>
@@ -48,23 +47,33 @@
 			};
 			
 			// 创建地图画布
-
 			$.ajax({
 				url: 'json/world.geo.json',
 				dataType: 'json'
 			}).done(function(data){
-
-				console.log(data);
-
-				var map = new GeoMap({container:'#map'});
+				var map = new GeoMap({
+					container:'#map',
+					offset: {
+						x: 0,
+						y: 0
+					},
+					scale: {
+						x: 2.5,
+						y: 3
+					}
+				});
 				map.load(data);
 				map.render();
-
+				map.shapes.hover(function(){
+					this.attr({
+						fill: '#0c0'
+					});
+				},function(){
+					this.attr({
+						fill: '#000'
+					})
+				});
 			});
-			
-
-
-
 		</script>
 	</body>
 </html>

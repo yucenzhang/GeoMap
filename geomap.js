@@ -1,13 +1,22 @@
 (function($){
   var DrewShape = {
+    "ox": 0,
+    "oy": 0,
+    "setOffset": function(p){
+      var self = this,
+          x = (p[0] < -168.5 ? p[0] + 360 : p[0]) + 170 + self.ox,
+          y = (90 - p[1]) + self.oy;
+      return [x, y];
+    },
     "Point": function(coordinates){
-      coordinates = setOffset(coordinates);
+      coordinates = this.setOffset(coordinates);
       return coordinates.join(',');
     },
     "LineString": function(coordinates){
-      var str = '';
+      var str = '',
+          self = this;
       coordinates.forEach(function(point, idx){
-        point = setOffset(point);
+        point = self.setOffset(point);
         if(idx == 0){
           str = 'M' + point.join(',');
         }else{
@@ -47,11 +56,6 @@
     "GeometryCollection": function(){}
   };
 
-  function setOffset(p){
-    var x = (p[0] < -168.5 ? p[0] + 360 : p[0]) + 170,
-        y = 90 - p[1];
-    return [x, y];
-  }
 
   var GeoMap = function(cfg){
     var self = this;
@@ -60,12 +64,8 @@
       container: 'body',
       width: '100%',
       height: '100%',
-      offset: {
-        x: 170, y: 90
-      },
-      scale:{
-        x: 2.6, y: 3
-      },
+      offset: {},
+      scale:{},
       mapStyle: {
         'fill': '#000',
         'stroke': '#0c0',
@@ -78,8 +78,9 @@
     self.height = defaultCfg.height || self.container.height();
     self.canvas = new Raphael(self.container.get(0), self.width, self.height);
     self.mapStyle = defaultCfg.mapStyle;
-    self.scale = defaultCfg.scale,
-    self.shapes = {};
+    self.scale = defaultCfg.scale;
+    self.offset = defaultCfg.offset;
+    self.shapes = self.canvas.set();
     self.json = null;
     self.paths = null;
   };
@@ -90,14 +91,16 @@
     },
     render: function(){
       var self = this,
-          paths = self.paths,
-          canvas = self.canvas,
-          style = self.mapStyle,
-          aPath = null,
-          scalex = self.scale.x,
-          scaley = self.scale.y;
+        paths = self.paths,
+        canvas = self.canvas,
+        style = self.mapStyle,
+        aPath = null,
+        scalex = self.scale.x,
+        scaley = self.scale.y;
+
       paths.forEach(function(path){
         aPath = canvas.path(path.path).attr(style).scale(scalex, scaley, 0, 0);
+        self.shapes.push(aPath);
       });
     },
     json2path: function(json){
@@ -108,6 +111,10 @@
         shapeCoordinates,
         str,
         pathArray = [];
+
+      DrewShape.ox = offset.x || 0;
+      DrewShape.oy = offset.y || 0;
+
       shapes.forEach(function(shape, idx, arr){
         if(shape.type !== 'Feature') return;
         shapeType = shape.geometry.type;
