@@ -82,7 +82,8 @@
           crossline:{
             enable: true,
             color: '#ccc'
-          }
+          },
+          background:'#fff'
         };
 
     $.extend(true, defaultCfg, cfg);
@@ -99,7 +100,7 @@
     self.shapes = self.canvas.set();
     self.json = null;
     self.paths = null;
-    self.back = null;
+    self.back = defaultCfg.background;
     self.crosslineX = null;
     self.crosslineY = null;
     self.crossline = defaultCfg.crossline;
@@ -122,12 +123,12 @@
         height = self.height,
         left= self.left + 5,
         top = self.top + 7,
-        crossline = self.crossline;
+        crossline = self.crossline,
+        mapleft = convertor.xmin,
+        maptop = convertor.ymin,
+        mapwidth = convertor.xmax - convertor.xmin,
+        mapheight = convertor.ymax - convertor.ymin;
 
-      mapleft = convertor.xmin;
-      maptop = convertor.ymin;
-      mapwidth = convertor.xmax - convertor.xmin;
-      mapheight = convertor.ymax - convertor.ymin;
       if(!scale){
         var temx = width/mapwidth,
           temy = height/mapheight;
@@ -146,8 +147,8 @@
         };
       }
 
-      self.back = canvas.rect(mapleft, maptop, mapwidth, mapheight).scale(scale.x, scale.y, 0, 0).attr({
-        'fill': '#eee', 'stroke-width': 0
+      back = canvas.rect(mapleft, maptop, mapwidth, mapheight).scale(scale.x, scale.y, 0, 0).attr({
+        'fill': self.back, 'stroke-width': 0
       });
 
       linehead = 'M' + (mapleft) + ',' + (maptop);
@@ -175,7 +176,7 @@
           }).mouseout(function(){
             hideCrossLine();
           });
-        self.back.mouseover(function(){
+        back.mouseover(function(){
           showCrossLine();
         }).mousemove(function(e){
           moveCrossLine(e);

@@ -27,7 +27,8 @@ function geodemo(data, container, scale, offset){
   var map = new GeoMap({
       container: container,
       scale: scale,
-      offset: offset
+      offset: offset,
+      background: '#eee'
     }),
     tooltip = $('#tooltip');
   map.load(data);
