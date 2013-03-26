@@ -10,13 +10,16 @@ $(function(){
     url: 'json/0.json',
     dataType: 'json'
   }).done(function(data){
-    map = geodemo(data, '#chinamap', {x:8,y:11}, null);
-  });
-  $.ajax({
-    url: 'json/11.json',
-    dataType: 'json'
-  }).done(function(data){
-    geodemo(data, '#citymap', {x:160,y:220}, null);
+    map = geodemo(data, '#chinamap', null, null);
+    map.shapes.click(function(){
+      var id = this.data('id');
+      $.ajax({
+        url: 'json/' + id + '.json',
+        dataType: 'json'
+      }).done(function(data){
+        geodemo(data, '#citymap', null, null);
+      });
+    });
   });
 });
 
