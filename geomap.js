@@ -124,9 +124,18 @@
         top = self.top + 7,
         crossline = self.crossline;
 
+      mapleft = convertor.xmin;
+      maptop = convertor.ymin;
+      mapwidth = convertor.xmax - convertor.xmin;
+      mapheight = convertor.ymax - convertor.ymin;
       if(!scale){
+        var temx = width/mapwidth,
+          temy = height/mapheight;
+        temx > temy ? temx = temy : temy = temx;
+        temx = temy * 0.73;
         scale = {
-          x: 1, y: 1
+          x: temx,
+          y: temy
         };
       }
 
@@ -136,10 +145,6 @@
           y: convertor.ymin
         };
       }
-      mapleft = convertor.xmin;
-      maptop = convertor.ymin;
-      mapwidth = convertor.xmax - convertor.xmin;
-      mapheight = convertor.ymax - convertor.ymin;
 
       self.back = canvas.rect(mapleft, maptop, mapwidth, mapheight).scale(scale.x, scale.y, 0, 0).attr({
         'fill': '#eee', 'stroke-width': 0
