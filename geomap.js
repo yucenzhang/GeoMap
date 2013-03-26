@@ -155,7 +155,7 @@
       paths.forEach(function(path){
         if(path.type == 'point' || path.type == 'MultiPoint'){
         }else{
-          aPath = canvas.path(path.path).data('properties', path.properties);
+          aPath = canvas.path(path.path).data({'properties': path.properties, 'id': path.id});
         }
         shapes.push(aPath);
       });
@@ -229,7 +229,8 @@
         pathArray.push({
           type: shapeType,
           path: str,
-          properties: shape.properties
+          properties: shape.properties,
+          id: shape.id
         });
       }
       return pathArray;

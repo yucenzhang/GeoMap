@@ -9,6 +9,7 @@
 		<script type="text/javascript" src="../jslib/jquery-1.8.2.min.js"></script>
 		<script type="text/javascript" src="../raphael/raphael-min.js"></script>
 		<script type="text/javascript" src="geomap.js"></script>
+        <script type="text/javascript" src="example.js"></script>
 	</head>
 	<body style="background:#eee;">
 		<div id="map" style="width:1000px;height:500px;margin:0 auto;"></div>
@@ -16,9 +17,6 @@
 			<div id="chinamap" style="width:500px;height:500px;"></div>
 			<div id="citymap" style="width:400px;height:500px;margin:-500px 0 0 600px"></div>
 		</div>
-
-		<style>
-		</style>
 
 		<div id="tooltip" style="position:absolute;padding:10px;background:#fff;border:5px solid #708090;display:none;">
 		</div>
@@ -49,108 +47,6 @@
 				sydney:{y:-33.86748690,x:151.20699020}
 			};
 			
-			// 创建地图画布
-			$.ajax({
-				url: 'json/world.geo.json',
-				dataType: 'json'
-			}).done(function(data){
-				var map = new GeoMap({
-    					container:'#map',
-                        scale: {
-		        			x: 2.5,
-			    			y: 3
-				    	}
-    				}),
-	    			tooltip = $('#tooltip');
-
-                map.load(data);
-				map.render();
-				map.shapes.hover(function(e){
-					var self = this;
-                    self.animate({
-                        fill: '#369'
-                    },100);
-                },function(){
-                    this.animate({
-                        fill: '#fff'
-                    },100)
-                }).mousemove(function(e){
-                    var self = this;
-                    tooltip.html(self.data('properties').name).css({
-                        "top":e.pageY + 20,
-                        "left":e.pageX + 20
-                    }).show();
-                }).mouseout(function(){
-                    tooltip.empty().hide();
-                });
-			});
-
-			$.ajax({
-				url: 'json/0.json',
-				dataType: 'json'
-			}).done(function(data){
-				var map = new GeoMap({
-                        container:'#chinamap',
-                        scale: {
-                            x: 8,
-                            y: 11
-                        }
-                    }),
-                    tooltip = $('#tooltip');
-				map.load(data);
-				map.render();
-				map.shapes.hover(function(e){
-					var self = this;
-					self.animate({
-						fill: '#369'
-					},100);
-				},function(){
-					this.animate({
-						fill: '#fff'
-					},100)
-				}).mousemove(function(e){
-					var self = this;
-					tooltip.html(self.data('properties').name).css({
-						"top":$(window).scrollTop() + e.clientY + 20,
-						"left":$(window).scrollLeft() + e.clientX + 20
-					}).show();
-				}).mouseout(function(){
-					tooltip.empty().hide();
-				});
-			});
-			$.ajax({
-				url: 'json/11.json',
-				dataType: 'json'
-			}).done(function(data){
-                var map = new GeoMap({
-                        container:'#citymap',
-                        scale: {
-                            x: 160,
-                            y: 220
-                        }
-                    }),
-                    tooltip = $('#tooltip');
-                map.load(data);
-                map.render();
-                map.shapes.hover(function(e){
-                    var self = this;
-                    self.animate({
-                        fill: '#369'
-                    },100);
-                },function(){
-                    this.animate({
-                        fill: '#fff'
-                    },100)
-                }).mousemove(function(e){
-                    var self = this;
-                    tooltip.html(self.data('properties').name).css({
-                        "top":$(window).scrollTop() + e.clientY + 20,
-                        "left":$(window).scrollLeft() + e.clientX + 20
-                    }).show();
-                }).mouseout(function(){
-                    tooltip.empty().hide();
-                });
-            });
 		</script>
 	</body>
 </html>
