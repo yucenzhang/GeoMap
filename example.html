@@ -10,13 +10,15 @@
 		<script type="text/javascript" src="../raphael/raphael-min.js"></script>
 		<script type="text/javascript" src="geomap.js"></script>
 	</head>
-	<body style="background:#E4E6E1;">
+	<body style="background:#eee;">
 		<div id="map" style="width:1000px;height:500px;margin:0 auto;"></div>
 		<div style="width:1000px;height:500px;overflow:hidden;">
 			<div id="chinamap" style="width:500px;height:500px;"></div>
 			<div id="citymap" style="width:400px;height:500px;margin:-500px 0 0 600px"></div>
 		</div>
 
+		<style>
+		</style>
 
 		<div id="tooltip" style="position:absolute;padding:10px;background:#fff;border:5px solid #708090;display:none;">
 		</div>
@@ -74,8 +76,8 @@
 						}).mousemove(function(e){
 									var self = this;
 									tooltip.html(self.data('properties').name).css({
-										"top":e.clientY + 20,
-										"left":e.clientX + 20
+										"top":e.pageY + 20,
+										"left":e.pageX + 20
 									}).show();
 								}).mouseout(function(){
 									tooltip.empty().hide();
@@ -116,7 +118,6 @@
 					tooltip.empty().hide();
 				});
 			});
-			/*
 			$.ajax({
 				url: 'json/11.json',
 				dataType: 'json'
@@ -150,7 +151,6 @@
 									tooltip.empty().hide();
 								});
 					});
-				*/
 		</script>
 	</body>
 </html>
