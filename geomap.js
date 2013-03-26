@@ -7,7 +7,6 @@
  */
 
 (function($){
-
   var convertor = {
     "xmin": 360,
     "xmax": 0,
@@ -17,12 +16,10 @@
       var self = this,
           x = (p[0] < -168.5 ? p[0] + 360 : p[0]) + 170,
           y = (90 - p[1]);
-
       if(self.xmin > x) self.xmin = x;
       if(self.xmax < x) self.xmax = x;
       if(self.ymin > y) self.ymin = y;
       if(self.ymax < y) self.ymax = y;
-
       return [x, y];
     },
     "Point": function(coordinates){
@@ -81,6 +78,10 @@
             'fill': '#fff',
             'stroke': '#999',
             'stroke-width': 0.7
+          },
+          crossline:{
+            enable: true,
+            color: '#ccc'
           }
         };
 
@@ -89,6 +90,8 @@
     self.container = $(defaultCfg.container);
     self.width = defaultCfg.width || self.container.width();
     self.height = defaultCfg.height || self.container.height();
+    self.left = self.container.offset().left;
+    self.top = self.container.offset().top;
     self.canvas = new Raphael(self.container.get(0), self.width, self.height);
     self.mapStyle = defaultCfg.mapStyle;
     self.scale = defaultCfg.scale;
@@ -96,6 +99,10 @@
     self.shapes = self.canvas.set();
     self.json = null;
     self.paths = null;
+    self.back = null;
+    self.crosslineX = null;
+    self.crosslineY = null;
+    self.crossline = defaultCfg.crossline;
   };
 
   GeoMap.prototype = {
@@ -104,6 +111,7 @@
     },
     render: function(){
       var self = this,
+        shapes = self.shapes,
         paths = self.paths,
         canvas = self.canvas,
         style = self.mapStyle,
@@ -111,7 +119,10 @@
         offset = self.offset,
         scale = self.scale,
         width = self.width,
-        height = self.height;
+        height = self.height,
+        left= self.left + 5,
+        top = self.top + 7,
+        crossline = self.crossline;
 
       if(!scale){
         scale = {
@@ -121,20 +132,71 @@
 
       if(!offset){
         offset = {
-          x: convertor.xmin * scale.x,
-          y: convertor.ymin * scale.y
+          x: convertor.xmin,
+          y: convertor.ymin
         };
       }
+      mapleft = convertor.xmin;
+      maptop = convertor.ymin;
+      mapwidth = convertor.xmax - convertor.xmin;
+      mapheight = convertor.ymax - convertor.ymin;
+
+      self.back = canvas.rect(mapleft, maptop, mapwidth, mapheight).scale(scale.x, scale.y, 0, 0).attr({
+        'fill': '#eee', 'stroke-width': 0
+      });
+
+      linehead = 'M' + (mapleft) + ',' + (maptop);
+      linex = linehead + 'H' + convertor.xmax * scale.x;
+      liney = linehead + 'V' + convertor.ymax * scale.y;
+
+      self.crosslineX = canvas.path(linex).attr({'stroke': crossline.color, 'stroke-width': '1px'}).hide();
+      self.crosslineY = canvas.path(liney).attr({'stroke': crossline.color, 'stroke-width': '1px'}).hide();
 
       paths.forEach(function(path){
         if(path.type == 'point' || path.type == 'MultiPoint'){
         }else{
-          aPath = canvas.path(path.path).attr(style).scale(scale.x, scale.y, 0, 0).data('properties', path.properties);
+          aPath = canvas.path(path.path).data('properties', path.properties);
         }
-        self.shapes.push(aPath);
+        shapes.push(aPath);
       });
-
       canvas.setViewBox(offset.x, offset.y, width, height, false);
+      shapes.attr(style).scale(scale.x, scale.y, mapleft, maptop);
+
+      if(crossline.enable === true){
+        shapes.mouseover(function(){
+          showCrossLine();
+        }).mousemove(function(e){
+            moveCrossLine(e);
+          }).mouseout(function(){
+            hideCrossLine();
+          });
+        self.back.mouseover(function(){
+          showCrossLine();
+        }).mousemove(function(e){
+          moveCrossLine(e);
+        }).mouseout(function(){
+          hideCrossLine();
+        });
+      }
+      function showCrossLine(){
+        self.crosslineX.toFront().show();
+        self.crosslineY.toFront().show();
+      }
+      function moveCrossLine(e){
+        var pos = getEventPos(e);
+        self.crosslineX.transform('T0,'+pos.y);
+        self.crosslineY.transform('T'+ pos.x + ',0');
+      }
+      function hideCrossLine(){
+        self.crosslineX.hide();
+        self.crosslineY.hide();
+      }
+      function getEventPos(e){
+        return {
+          x: parseInt(e.pageX - left) + 0.4,
+          y: parseInt(e.pageY - top) + 0.4
+        };
+      }
     },
     json2path: function(json){
       var self = this,
