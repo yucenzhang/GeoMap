@@ -12,10 +12,14 @@
     "xmax": 0,
     "ymin": 180,
     "ymax": 0,
+    "formatPoint": function(p){
+      return [(p[0] < -168.5 ? p[0] + 360 : p[0]) + 170, 90 - p[1]];
+    },
     "makePoint": function(p){
       var self = this,
-          x = (p[0] < -168.5 ? p[0] + 360 : p[0]) + 170,
-          y = (90 - p[1]);
+          point = self.formatPoint(p),
+          x = point[0],
+          y = point[1];
       if(self.xmin > x) self.xmin = x;
       if(self.xmax < x) self.xmax = x;
       if(self.ymin > y) self.ymin = y;
@@ -94,16 +98,9 @@
     self.left = self.container.offset().left;
     self.top = self.container.offset().top;
     self.canvas = new Raphael(self.container.get(0), self.width, self.height);
-    self.mapStyle = defaultCfg.mapStyle;
-    self.scale = defaultCfg.scale;
-    self.offset = defaultCfg.offset;
     self.shapes = self.canvas.set();
-    self.json = null;
+    self.config = defaultCfg;
     self.paths = null;
-    self.back = defaultCfg.background;
-    self.crosslineX = null;
-    self.crosslineY = null;
-    self.crossline = defaultCfg.crossline;
   };
 
   GeoMap.prototype = {
@@ -115,19 +112,21 @@
         shapes = self.shapes,
         paths = self.paths,
         canvas = self.canvas,
-        style = self.mapStyle,
-        aPath = null,
-        offset = self.offset,
-        scale = self.scale,
+        config = self.config,
+        style = config.mapStyle,
+        offset = config.offset,
+        scale = config.scale,
+        background = config.background,
+        crossline = config.crossline,
         width = self.width,
         height = self.height,
-        left= self.left + 5,
+        left = self.left + 5,
         top = self.top + 7,
-        crossline = self.crossline,
         mapleft = convertor.xmin,
         maptop = convertor.ymin,
         mapwidth = convertor.xmax - convertor.xmin,
-        mapheight = convertor.ymax - convertor.ymin;
+        mapheight = convertor.ymax - convertor.ymin,
+        aPath = null, linehead, linex, liney, back;
 
       if(!scale){
         var temx = width/mapwidth,
@@ -142,13 +141,13 @@
 
       if(!offset){
         offset = {
-          x: convertor.xmin,
-          y: convertor.ymin
+          x: mapleft,
+          y: maptop
         };
       }
 
       back = canvas.rect(mapleft, maptop, mapwidth, mapheight).scale(scale.x, scale.y, 0, 0).attr({
-        'fill': self.back, 'stroke-width': 0
+        'fill': background, 'stroke-width': 0
       });
 
       linehead = 'M' + (mapleft) + ',' + (maptop);
@@ -213,7 +212,7 @@
         geometries,
         pathArray = [];
 
-      convertor.xmin= 360;
+      convertor.xmin = 360;
       convertor.xmax = 0;
       convertor.ymin = 180;
       convertor.ymax = 0;
@@ -245,3 +244,4 @@
 
   window.GeoMap = GeoMap;
 })(jQuery);
+
