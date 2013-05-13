@@ -11,32 +11,33 @@
 
 
 ## 文件结构
-	
+
 	json/				//地图数据
 	old/				//旧版（实现方法有问题，存做标本）
 	src/				//开发文件
 	geomap-0.X.X.js		//发布文件
 	example.html		//示例文件
-	
 
 ## 使用方法
 
 基本操作：
 
-	//实例化一个GeoMap对象
-	var map = new GeoMap();	
+```js
+//实例化一个GeoMap对象
+var map = new GeoMap();
 	
-	//载入json数据
-	$.ajax({
-		url: '…'
-		dataType: 'json'
-	}).done(function(json){
-		map.load(json);		//将数据载入GeoMap的实例对象
-	});
-	
-	
-	//渲染
-	map.render();
+//载入json数据
+$.ajax({
+	url: '…'
+	dataType: 'json'
+}).done(function(json){
+	map.load(json);		//将数据载入GeoMap的实例对象
+});
+
+
+//渲染
+map.render();
+```
 
 
 设置：
