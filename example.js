@@ -10,7 +10,7 @@ $(function(){
     url: 'json/0.json',
     dataType: 'json'
   }).done(function(data){
-    map = geodemo(data, '#chinamap', null, null);
+    map = geodemo(data, '#chinamap', {x:5.9, y:8.1}, null);
     map.shapes.click(function(){
       var id = this.data('id');
       $.ajax({
