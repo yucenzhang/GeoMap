@@ -15,6 +15,7 @@
     "formatPoint": function(p){
       return [(p[0] < -168.5 ? p[0] + 360 : p[0]) + 170, 90 - p[1]];
     },
+    //TODO:画点的方法有问题
     "makePoint": function(p){
       var self = this,
           point = self.formatPoint(p),
@@ -202,6 +203,58 @@
           y: parseInt(e.pageY - top) + 0.4
         };
       }
+    },
+    setPoint: function(p){
+
+      var self = this,
+        config = self.config,
+        offset = config.offset,
+        scale = config.scale,
+        width = self.width,
+        height = self.height,
+        mapleft = convertor.xmin,
+        maptop = convertor.ymin,
+        mapwidth = convertor.xmax - convertor.xmin,
+        mapheight = convertor.ymax - convertor.ymin;
+
+      if(!scale){
+        var temx = width/mapwidth,
+          temy = height/mapheight;
+        temx > temy ? temx = temy : temy = temx;
+        temx = temy * 0.73;
+        scale = {
+          x: temx,
+          y: temy
+        };
+      }
+
+      if(!offset){
+        offset = {
+          x: mapleft,
+          y: maptop
+        };
+      }
+
+
+		  // 点的默认样式
+			var	a = {
+					"x":0,
+					"y":0,
+					"r":1,
+					"opacity":0.5,
+					"fill": "#238CC3",
+					"stroke": "#238CC3",
+					"stroke-width": 0,
+					"stroke-linejoin": "round"
+        };
+			$.extend(true, a, p);
+      p = convertor.makePoint([a.x, a.y]);
+      p[0] = p[0] * scale.x - mapleft - offset.x;
+      p[1] = p[1] * scale.y - maptop - offset.y;
+      a.x = p[0];
+      a.y = p[1];
+			c = self.canvas.circle(p[0], p[1], a.r).attr(a);
+			return c;
     },
     json2path: function(json){
       var self = this,

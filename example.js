@@ -33,6 +33,7 @@ function geodemo(data, container, scale, offset){
     tooltip = $('#tooltip');
   map.load(data);
   map.render();
+  map.setPoint({x: 116.4551, y: 40.2539}).attr('r', 5);
   map.shapes.hover(function(e){
     var self = this;
     self.animate({
