@@ -1,0 +1,11 @@
+/*
+ * GeoMap v0.4.1
+ * https://github.com/x6doooo/GeoMap
+ *
+ * Copyright 2013 Dx. Yang
+ * Released under the MIT license
+ */
+
+(function(){
+var version = "0.4.1";
+
