@@ -1,20 +1,20 @@
 $(function(){
   // 创建地图画布
   $.ajax({
-    url: 'json/world.geo.json',
+    url: '../json/world.geo.json',
     dataType: 'json'
   }).done(function(data){
     geodemo(data, '#map', {x:2.5,y:3}, null);
   });
   $.ajax({
-    url: 'json/0.json',
+    url: '../json/0.json',
     dataType: 'json'
   }).done(function(data){
     map = geodemo(data, '#chinamap', {x:5.9, y:8.1}, null);
     map.shapes.click(function(){
       var id = this.data('id');
       $.ajax({
-        url: 'json/' + id + '.json',
+        url: '../json/' + id + '.json',
         dataType: 'json'
       }).done(function(data){
         geodemo(data, '#citymap', null, null);
