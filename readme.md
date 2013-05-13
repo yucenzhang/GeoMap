@@ -9,6 +9,7 @@
 * 通过Raphael绘制地图，默认采用svg，低版本IE采用vml，兼容性较好
 
 
+
 ## 文件结构
 	
 	json/				//地图数据
@@ -75,5 +76,22 @@
 	
 操作地图上的区块：
 	
-	todo
+	var map = new GeoMap(config);
+	map.load(data);
+	map.render();
+	
+	//渲染之后，map的shapes属性即地图上的各个区块，可以添加事件
+	map.shapes.hover(function(){
+		...
+	});
+	
+画点：
+
+	//map对象有一个setPoint方法，该方法接受一个坐标参数（取实际经纬度坐标）
+	//比如北京坐标是x: 116.4551, y: 40.2539
+	point = map.setPoint({x: 116.4551, y: 40.2539});
+	
+	//点是用Raphael的circle方法画出的，可以通过属性设置，更改点的大小
+	point.attr('r', 5);
+	
 	
