@@ -14,7 +14,8 @@
 	
 	json/				//地图数据
 	old/				//旧版（实现方法有问题，存做标本）
-	geomap.js			//主文件
+	src/				//开发文件
+	geomap-0.X.X.js		//发布文件
 	example.html		//示例文件
 	
 
