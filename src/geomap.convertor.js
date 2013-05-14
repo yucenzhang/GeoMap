@@ -3,8 +3,14 @@ var convertor = {
   "xmax": 0,
   "ymin": 180,
   "ymax": 0,
+  /*!Private
+      让阿拉斯加地区在地图右侧显示
+   */
   "formatPoint": function(p){
-    return [(p[0] < -168.5 ? p[0] + 360 : p[0]) + 170, 90 - p[1]];
+    return [
+      (p[0] < -168.5 ? p[0] + 360 : p[0]) + 170, 
+      90 - p[1]
+    ];
   },
   "makePoint": function(p){
     var self = this,
