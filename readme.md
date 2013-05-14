@@ -43,9 +43,25 @@ map.render();
 
 ```js
 //实例化GeoMap对象时可以传入设置项目的对象
-var map = new GeoMap({
-	…
-});
+var map = new GeoMap({…});
+/*
+	默认设置
+	defaultCfg = {
+		container: 'body',
+	    offset: null,
+		scale: null,
+		mapStyle: {
+			'fill': '#fff',
+			'stroke': '#999',
+			'stroke-width': 0.7
+		},
+		crossline:{
+			enable: true,
+			color: '#ccc'
+		},
+	    background:'#fff'
+	};
+*/
 ```
 
 指定渲染位置：
@@ -105,3 +121,9 @@ point = map.setPoint({x: 116.4551, y: 40.2539});
 //点是用Raphael的circle方法画出的，可以通过属性设置，更改点的大小
 point.attr('r', 5);
 ```
+
+计算一个点的实际经纬度：
+```js
+map.getGeoPosition([10, 10]); //=> 页面地图上10,10这个点的实际经纬度坐标
+```
+
