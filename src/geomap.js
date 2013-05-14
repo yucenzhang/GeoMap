@@ -1,5 +1,5 @@
 /*
- * GeoMap v0.4.1
+ * GeoMap v0.4.2
  * https://github.com/x6doooo/GeoMap
  *
  * Copyright 2013 Dx. Yang
@@ -7,13 +7,21 @@
  */
 
 (function(){
-var version = "0.4.1";var convertor = {
+var version = "0.4.2";
+
+var convertor = {
   "xmin": 360,
   "xmax": 0,
   "ymin": 180,
   "ymax": 0,
+  /*!Private
+      让阿拉斯加地区在地图右侧显示
+   */
   "formatPoint": function(p){
-    return [(p[0] < -168.5 ? p[0] + 360 : p[0]) + 170, 90 - p[1]];
+    return [
+      (p[0] < -168.5 ? p[0] + 360 : p[0]) + 170, 
+      90 - p[1]
+    ];
   },
   "makePoint": function(p){
     var self = this,
@@ -97,7 +105,7 @@ var GeoMap = function(cfg){
         'stroke-width': 0.7
       },
       crossline:{
-        enable: true,
+        enable: false,
         color: '#ccc'
       },
       background:'#fff'
@@ -106,6 +114,11 @@ var GeoMap = function(cfg){
   $.extend(true, defaultCfg, cfg);
 
   self.container = $(defaultCfg.container);
+
+  if(self.container.length == 0){
+    throw new Error('map container is not defined!');
+  }
+
   self.width = defaultCfg.width || self.container.width();
   self.height = defaultCfg.height || self.container.height();
   self.left = self.container.offset().left;
@@ -116,11 +129,6 @@ var GeoMap = function(cfg){
   self.paths = null;
 };
 
-/*
- *
- * TODO: 将图上的坐标转换成实际经纬度
- *
- * */
 
 GeoMap.prototype = {
   load: function(json){
@@ -226,6 +234,28 @@ GeoMap.prototype = {
       };
     }
   },
+  /*!
+      将平面上的一个点的坐标，转换成实际经纬度坐标
+   */
+  getGeoPosition: function(p){
+    var x1 = p[0],
+      y1 = p[1],
+      m = this.shapes[0].matrix,
+      x,
+      y;
+    a = m.a;
+    b = m.b;
+    c = m.c;
+    d = m.d;
+    e = m.e;
+    f = m.f;
+    y = (y1 - f - x1 / a * b + e / a * b)/(d - c / a * b);
+    x = (x1 - e - y * c) / a;
+    y = 90 - y;
+    x = x - 170;
+    x = x > 180 ? x - 360 : x;
+    return [x, y];
+  },
   setPoint: function(p){
     // 点的默认样式
     var	self = this,
@@ -242,10 +272,10 @@ GeoMap.prototype = {
       matrixTrans = self.shapes[0].matrix;
     $.extend(true, a, p);
     p = convertor.makePoint([a.x, a.y]);
-
     //通过matrix去计算点变换后的坐标
     p[0] = matrixTrans.x(p[0], p[1]);
     p[1] = matrixTrans.y(p[0], p[1]);
+    self.getGeoPosition(p);
     a.x = p[0];
     a.y = p[1];
     c = self.canvas.circle(p[0], p[1], a.r).attr(a);

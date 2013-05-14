@@ -1,5 +1,5 @@
 /*
- * GeoMap v0.4.1
+ * GeoMap v0.4.2
  * https://github.com/x6doooo/GeoMap
  *
  * Copyright 2013 Dx. Yang
@@ -7,5 +7,5 @@
  */
 
 (function(){
-var version = "0.4.1";
+var version = "0.4.2";
 
