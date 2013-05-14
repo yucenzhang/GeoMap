@@ -44,10 +44,17 @@ function geodemo(data, container, scale, offset){
       fill: '#fff'
     },100)
   }).mousemove(function(e){
-      var self = this;
-      tooltip.html(self.data('properties').name).css({
-        "top":$(window).scrollTop() + e.clientY + 20,
-        "left":$(window).scrollLeft() + e.clientX + 20
+      var self = this,
+        $win = $(window),
+        top = $win.scrollTop() + e.clientY,
+        left = $win.scrollLeft() + e.clientX,
+        pos = map.getGeoPosition([left, top]);
+      
+      tooltip.html(self.data('properties').name + '<br />指针坐标：<br />lng = ' + pos[0].toFixed(2) + '<br />lat = ' + pos[1].toFixed(2)).css({
+        "top" : top + 20,
+        "left" : left + 20,
+        "line-height" : "200%",
+        "font-size": "12px"
       }).show();
     }).mouseout(function(){
       tooltip.empty().hide();
