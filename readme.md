@@ -1,5 +1,9 @@
 # GeoMap.js
 
+
+DEMO: <http://xbingoz.com/demo/geomap/example.html>
+
+
 ## 概述
 
 * GeoMap.js是一个绘制矢量地图控件，基于jQuery、Raphael，
@@ -16,7 +20,6 @@
 	old/				//旧版（实现方法有问题，存做标本）
 	src/				//开发文件
 	geomap-0.X.X.js		//发布文件
-	example.html		//示例文件
 
 ## 使用方法
 
@@ -26,13 +29,8 @@
 //实例化一个GeoMap对象
 var map = new GeoMap();
 	
-//载入json数据
-$.ajax({
-	url: '…'
-	dataType: 'json'
-}).done(function(json){
-	map.load(json);		//将数据载入GeoMap的实例对象
-});
+//载入geoJSON格式的数据
+map.load(geo_json_data);	
 
 //渲染
 map.render();
@@ -43,25 +41,29 @@ map.render();
 
 ```js
 //实例化GeoMap对象时可以传入设置项目的对象
-var map = new GeoMap({…});
-/*
-	默认设置
+var map = new GeoMap(cfg);
+//不传参数时， 将使用内置的默认参数
 	defaultCfg = {
-		container: 'body',
-	    offset: null,
+    //地图所在的位置
+    container: 'body',
+    //地图的偏移量, eg:{x:10, y:10}
+	  offset: null,
+    //地图的缩放比例, eg:{x:10, y:10}
 		scale: null,
+    //地图样式
 		mapStyle: {
 			'fill': '#fff',
 			'stroke': '#999',
 			'stroke-width': 0.7
 		},
+    //是否显示鼠标跟随的十字刻度线
 		crossline:{
-			enable: true,
+			enable: false,
 			color: '#ccc'
 		},
-	    background:'#fff'
+    //地图背景
+	  background:'#fff'
 	};
-*/
 ```
 
 指定渲染位置：
