@@ -103,6 +103,8 @@ GeoMap.prototype = {
     canvas.setViewBox(offset.x, offset.y, width, height, false);
     shapes.attr(style).scale(scale.x, scale.y, mapleft, maptop);
 
+
+    //TODO: crossline的位置计算，由于要做一点偏移，所以偏移量要考虑到缩放问题，类似getGeoPosition方法，计算出图上偏移的实际值
     if(crossline.enable === true){
       shapes.mouseover(function(){
         showCrossLine();
