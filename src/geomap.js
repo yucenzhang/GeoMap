@@ -1,5 +1,5 @@
 /*
- * GeoMap v0.4.2
+ * GeoMap v0.4.3
  * https://github.com/x6doooo/GeoMap
  *
  * Copyright 2013 Dx. Yang
@@ -7,7 +7,7 @@
  */
 
 (function(){
-var version = "0.4.2";
+var version = "0.4.3"
 
 var convertor = {
   "xmin": 360,
@@ -153,7 +153,7 @@ GeoMap.prototype = {
       maptop = convertor.ymin,
       mapwidth = convertor.xmax - convertor.xmin,
       mapheight = convertor.ymax - convertor.ymin,
-      aPath = null, linehead, linex, liney, back, idx, len, currentPath;
+      aPath = null, linehead, linex, liney, back, i, len, currentPath;
 
     if(!scale){
       var temx = width/mapwidth,
@@ -190,6 +190,7 @@ GeoMap.prototype = {
       if(currentPath.type == 'point' || currentPath.type == 'MultiPoint'){
         //TODO
       }else{
+        console.log(currentPath.path);
         aPath = canvas.path(currentPath.path).data({'properties': currentPath.properties, 'id': currentPath.id});
       }
       shapes.push(aPath);
@@ -198,6 +199,7 @@ GeoMap.prototype = {
     canvas.setViewBox(offset.x, offset.y, width, height, false);
     shapes.attr(style).scale(scale.x, scale.y, mapleft, maptop);
 
+    //TODO: crossline的位置计算，由于要做一点偏移，所以偏移量要考虑到缩放问题，类似getGeoPosition方法，计算出图上偏移的实际值
     if(crossline.enable === true){
       shapes.mouseover(function(){
         showCrossLine();
