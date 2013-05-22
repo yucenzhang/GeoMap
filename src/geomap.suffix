@@ -1,4 +1,4 @@
 
 GeoMap.version = version;
 this.GeoMap = GeoMap;
-})();
+})(jQuery);

@@ -6,6 +6,6 @@
  * Released under the MIT license
  */
 
-(function(){
+(function($, undefined){
 var version = "0.4.3"
 
