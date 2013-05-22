@@ -82,3 +82,47 @@ var convertor = {
     return str;
   }
 };
+
+function json2path(json){
+  var
+    shapes = json.features,
+    shapeType,
+    shapeCoordinates,
+    str,
+    geometries,
+    pathArray = [],
+    i, j,
+    len, len2,
+    val,
+    shape;
+
+  convertor.xmin = 360;
+  convertor.xmax = 0;
+  convertor.ymin = 180;
+  convertor.ymax = 0;
+
+  for(i = 0, len = shapes.length; i < len; i++){
+    shape = shapes[i];
+    if(shape.type == 'Feature'){
+      pushApath(shape.geometry, shape);
+    }else if(shape.type = 'GeometryCollection'){
+      geometries = shape.geometries;
+      for(j = 0, len2 = geometries.length; j < len2; j++){
+        val = geometries[j];
+        pushApath(val, val);
+      }
+    }
+  }
+  function pushApath(gm, shape){
+    shapeType = gm.type;
+    shapeCoordinates = gm.coordinates;
+    str = convertor[shapeType](shapeCoordinates);
+    pathArray.push({
+      type: shapeType,
+      path: str,
+      properties: shape.properties,
+      id: shape.id
+    });
+  }
+  return pathArray;
+}
