@@ -64,14 +64,14 @@ GeoMap.prototype = {
         temy = height / mapheight;
       temx > temy ? temx = temy : temy = temx;
       temx = temy * 0.73;
-      scale = {
+      self.config.scale = scale = {
         x: temx,
         y: temy
       };
     }
 
     if(!offset){
-      offset = {
+      self.config.offset = offset = {
         x: mapleft,
         y: maptop
       };
@@ -87,7 +87,6 @@ GeoMap.prototype = {
 
     self.crosslineX = canvas.path(linex).attr({'stroke': crossline.color, 'stroke-width': '1px'}).hide();
     self.crosslineY = canvas.path(liney).attr({'stroke': crossline.color, 'stroke-width': '1px'}).hide();
-
 
     for(i = 0, len = paths.length; i < len; i++){
       currentPath = paths[i];
