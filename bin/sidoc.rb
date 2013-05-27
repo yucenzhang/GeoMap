@@ -66,8 +66,7 @@ loader.src_path = '../src/geomap.'
 loader.file_name_list = %W(
     prefix
     convertor.js
-    #svg.js
-    canvas.js
+    svg.js
     suffix
 )
 
