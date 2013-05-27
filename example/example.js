@@ -4,7 +4,7 @@ $(function(){
     url: '../json/world.geo.json',
     dataType: 'json'
   }).done(function(data){
-    geodemo(data, '#map', {x:2.5,y:3}, null);
+    m1 = geodemo(data, '#map', {x:2.5,y:3}, null);
   });
   $.ajax({
     url: '../json/0.json',
@@ -17,7 +17,7 @@ $(function(){
         url: '../json/' + id + '.json',
         dataType: 'json'
       }).done(function(data){
-        geodemo(data, '#citymap', null, null);
+        m2 = geodemo(data, '#citymap', null, null);
       });
     });
   });
@@ -48,8 +48,8 @@ function geodemo(data, container, scale, offset){
         $win = $(window),
         top = $win.scrollTop() + e.clientY,
         left = $win.scrollLeft() + e.clientX,
-        pos = map.getGeoPosition([left, top]);
-      
+        pos = map.getGeoPosition([e.layerX + map.config.offset.x, e.layerY + map.config.offset.y]);
+
       tooltip.html(self.data('properties').name + '<br />指针坐标：<br />lng = ' + pos[0].toFixed(2) + '<br />lat = ' + pos[1].toFixed(2)).css({
         "top" : top + 20,
         "left" : left + 20,
