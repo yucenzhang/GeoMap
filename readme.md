@@ -17,7 +17,7 @@ DEMO: <http://xbingoz.com/demo/geomap/example.html>
 ## 文件结构
 
 	json/				//地图数据
-	old/				//旧版（实现方法有问题，存做标本）
+	old/				//旧版本备份
 	src/				//开发文件
 	geomap-0.X.X.js		//发布文件
 
@@ -42,28 +42,29 @@ map.render();
 ```js
 //实例化GeoMap对象时可以传入设置项目的对象
 var map = new GeoMap(cfg);
+
 //不传参数时， 将使用内置的默认参数
-	defaultCfg = {
+defaultCfg = {
     //地图所在的位置
     container: 'body',
     //地图的偏移量, eg:{x:10, y:10}
-	  offset: null,
+    offset: null,
     //地图的缩放比例, eg:{x:10, y:10}
-		scale: null,
+    scale: null,
     //地图样式
-		mapStyle: {
-			'fill': '#fff',
-			'stroke': '#999',
-			'stroke-width': 0.7
-		},
+    mapStyle: {
+        'fill': '#fff',
+        'stroke': '#999',
+        'stroke-width': 0.7
+    },
     //是否显示鼠标跟随的十字刻度线
-		crossline:{
-			enable: false,
-			color: '#ccc'
-		},
+    crossline:{
+        enable: false,
+        color: '#ccc'
+    },
     //地图背景
-	  background:'#fff'
-	};
+    background:'#fff'
+};
 ```
 
 指定渲染位置：
@@ -118,6 +119,7 @@ map.shapes.hover(function(){
 ```js
 //map对象有一个setPoint方法，该方法接受一个坐标参数（取实际经纬度坐标）
 //比如北京坐标是x: 116.4551, y: 40.2539
+//setPoint方法会根据当前地图的缩放和偏移自动计算图上坐标
 point = map.setPoint({x: 116.4551, y: 40.2539});
 
 //点是用Raphael的circle方法画出的，可以通过属性设置，更改点的大小
