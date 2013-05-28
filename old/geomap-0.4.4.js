@@ -1,5 +1,5 @@
 /*
- * GeoMap v0.4.5
+ * GeoMap v0.4.4
  * https://github.com/x6doooo/GeoMap
  *
  * Copyright 2013 Dx. Yang
@@ -7,7 +7,7 @@
  */
 
 (function($, undefined){
-var version = "0.4.5"
+var version = "0.4.4"
 
 var convertor = {
   "xmin": 360,
@@ -301,8 +301,19 @@ GeoMap.prototype = {
   },
   geo2pos: function(p){
     var	self = this,
+      a = {
+        "x": 0,
+        "y": 0,
+        "r": 1,
+        "opacity": 0.5,
+        "fill": "#238CC3",
+        "stroke": "#238CC3",
+        "stroke-width": 0,
+        "stroke-linejoin": "round"
+      },
       matrixTrans = self.shapes[0].matrix;
-    p = convertor.makePoint([p.x, p.y]);
+    $.extend(true, a, p);
+    p = convertor.makePoint([a.x, a.y]);
     //通过matrix去计算点变换后的坐标
     p[0] = matrixTrans.x(p[0], p[1]);
     p[1] = matrixTrans.y(p[0], p[1]);
@@ -322,8 +333,13 @@ GeoMap.prototype = {
         "stroke-linejoin": "round"
       },
       matrixTrans = self.shapes[0].matrix;
-    p = self.geo2pos(p);
     $.extend(true, a, p);
+    p = convertor.makePoint([a.x, a.y]);
+    //通过matrix去计算点变换后的坐标
+    p[0] = matrixTrans.x(p[0], p[1]);
+    p[1] = matrixTrans.y(p[0], p[1]);
+    a.x = p[0];
+    a.y = p[1];
     return self.canvas.circle(p[0], p[1], a.r).attr(a);
   }
 };

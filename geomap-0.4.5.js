@@ -1,5 +1,5 @@
 /*
- * GeoMap v0.4.4
+ * GeoMap v0.4.5
  * https://github.com/x6doooo/GeoMap
  *
  * Copyright 2013 Dx. Yang
@@ -7,7 +7,7 @@
  */
 
 (function($, undefined){
-var version = "0.4.4"
+var version = "0.4.5"
 
 var convertor = {
   "xmin": 360,
@@ -299,6 +299,15 @@ GeoMap.prototype = {
     x = x > 180 ? x - 360 : x;
     return [x, y];
   },
+  geo2pos: function(p){
+    var	self = this,
+      matrixTrans = self.shapes[0].matrix;
+    p = convertor.makePoint([p.x, p.y]);
+    //通过matrix去计算点变换后的坐标
+    p[0] = matrixTrans.x(p[0], p[1]);
+    p[1] = matrixTrans.y(p[0], p[1]);
+    return p;
+  },
   setPoint: function(p){
     // 点的默认样式
     var	self = this,
@@ -313,14 +322,8 @@ GeoMap.prototype = {
         "stroke-linejoin": "round"
       },
       matrixTrans = self.shapes[0].matrix;
+    p = self.geo2pos(p);
     $.extend(true, a, p);
-    p = convertor.makePoint([a.x, a.y]);
-    //通过matrix去计算点变换后的坐标
-    p[0] = matrixTrans.x(p[0], p[1]);
-    p[1] = matrixTrans.y(p[0], p[1]);
-    self.getGeoPosition(p);
-    a.x = p[0];
-    a.y = p[1];
     return self.canvas.circle(p[0], p[1], a.r).attr(a);
   }
 };
