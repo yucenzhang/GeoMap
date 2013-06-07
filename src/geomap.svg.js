@@ -35,6 +35,9 @@ var GeoMap = function(cfg){
 };
 
 GeoMap.prototype = {
+  clear: function(){
+    this.shapes.remove();
+  },
   load: function(json){
     this.paths = json2path(json);
   },
