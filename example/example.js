@@ -1,4 +1,9 @@
 $(function(){
+  var m2 = new GeoMap({
+      container: '#citymap',
+      background: '#eee'
+    }),
+    tooltip = $('#tooltip');
   // 创建地图画布
   $.ajax({
     url: '../json/world.geo.json',
@@ -17,7 +22,10 @@ $(function(){
         url: '../json/' + id + '.json',
         dataType: 'json'
       }).done(function(data){
-        m2 = geodemo(data, '#citymap', null, null);
+          m2.config.scale = null;
+          m2.config.offset = null;
+          m2.load(data);
+          m2.render();
       });
     });
   });
