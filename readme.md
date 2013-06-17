@@ -95,6 +95,24 @@ var map = new GeoMap({
 //如果不设置偏移，脚本会自动计算路径数据，并让地图从左上角开始渲染
 ```
 
+清空画布：（since 0.4.7）
+
+```js
+map = new GeoMap({...});
+map.load(data_1);
+map.render();
+//完成一次绘制后，map对象可以清空画布
+map.clear();
+//重新绘制其他地区数据
+//重绘需要注意：如果不确定偏移和缩放是否能够沿用，最好清空一次，让load方法重新计算这两个值
+map.config.scale = null;
+map.config.offset = null;
+map.load(data_2);   //载入新数据
+map.render();   //重绘
+
+
+```
+
 属性绑定：
 
 ```js
