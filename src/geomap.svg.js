@@ -39,18 +39,17 @@ GeoMap.prototype = {
     this.shapes.remove();
   },
   load: function(json){
-    var paths = json2path(json);
-    this.paths = paths;
-
+    this.paths = json2path(json);
+    /* 效果不理想，暂弃
     var onePath = '';
     paths.forEach(function(p){
       onePath += p.path;
     });
 
     this.onePath = onePath;
-
+    */
   },
-  render: function(isRenderOnePath){
+  render: function(){
     var self = this,
       shapes = self.shapes,
       paths = self.paths,
@@ -71,7 +70,8 @@ GeoMap.prototype = {
       mapheight = convertor.ymax - convertor.ymin,
       aPath = null, linehead, linex, liney, back, i, len, currentPath;
 
-    if(isRenderOnePath) paths = [{path: self.onePath}];
+    // 暂弃
+    // if(isRenderOnePath) paths = [{path: self.onePath}];
 
     if(!scale){
       var temx = width / mapwidth,
