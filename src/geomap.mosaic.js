@@ -58,6 +58,7 @@ GeoMap.prototype.mosaic = function(cfg) {
 			//TODO
 		} else {
 			aPath = canvas.path(currentPath.path).data({
+        'ps': currentPath.path,
 				'properties': currentPath.properties,
 				'id': currentPath.id
 			}).attr({
@@ -69,41 +70,49 @@ GeoMap.prototype.mosaic = function(cfg) {
 	}
 
   var arrPos = [];
-  var sideSize = 2;
+  var sideSize = 1;
   var halfSide = sideSize / 2;
 
-  shapes.forEach(function(v){
+  shapes.forEach(function(v, idx){
   
+    if(idx > 30 || idx < 30) return;
+
     var bbox = v.getBBox();
-    var startX = (bbox.x - halfSide) % sideSize + halfSide;
-    var startY = (bbox.y - halfSide) % sideSize + halfSide;
+    var startX = bbox.x;
+    var startY = bbox.y;
     var i, j, oKey;
     var temX, temY;
 
-    console.log(bbox);
+    //console.log(bbox);
 
     for(i = 0; i * sideSize < bbox.width; i++){
       
       temX = i * sideSize + startX;
 
-      /*
       for(j = 0; j * sideSize < bbox.height; j++){
 
         temY = j * sideSize + startY;
 
-        if(v.isPointInside(temX, temY)){
+        console.log(temX + ' , ' + temY);
         
+//        canvas.circle(temX, temY, i);
+        
+
+        if(Raphael.isPointInsidePath(v.data('ps'), temX, temY)){
+        //if(v.isPointInside(temX, temY)){
+
           arrPos.push([temX, temY]);
 
         }
 
       }
-      */
 
     }
   
   });
 
+
+  console.log(arrPos);
   
   arrPos.forEach(function(v){
   
