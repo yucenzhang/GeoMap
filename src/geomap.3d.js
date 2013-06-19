@@ -1,22 +1,19 @@
+var nRadius = Math.PI / 180;
+
 var convertor_3d = {
+  "center": [0, 0],
   "formatPoint": function(p){
-    return [
-      (p[0] < -168.5 ? p[0] + 360 : p[0]) + 170,
-      90 - p[1]
-    ];
+
+    var self = this;
+
+    var x = p[0] * nRadius;
+    var y = p[1] * nRadius;
+
+    return [x, y];
   },
   "makePoint": function(p){
-    var self = this,
-      return self.formatPoint(p);
-    /*
-      x = point[0],
-      y = point[1];
-    if(self.xmin > x) self.xmin = x;
-    if(self.xmax < x) self.xmax = x;
-    if(self.ymin > y) self.ymin = y;
-    if(self.ymax < y) self.ymax = y;
-    return [x, y];
-     */
+    var self = this;
+    return self.formatPoint(p);
   },
   "Point": function(coordinates){
     coordinates = this.makePoint(coordinates);
@@ -91,11 +88,6 @@ function json2path_3d(json){
     val,
     shape;
 
-  convertor.xmin = 360;
-  convertor.xmax = 0;
-  convertor.ymin = 180;
-  convertor.ymax = 0;
-
   for(i = 0, len = shapes.length; i < len; i++){
     shape = shapes[i];
     if(shape.type == 'Feature'){
@@ -111,7 +103,7 @@ function json2path_3d(json){
   function pushApath(gm, shape){
     shapeType = gm.type;
     shapeCoordinates = gm.coordinates;
-    str = convertor[shapeType](shapeCoordinates);
+    str = convertor_3d[shapeType](shapeCoordinates);
     pathArray.push({
       type: shapeType,
       path: str,
