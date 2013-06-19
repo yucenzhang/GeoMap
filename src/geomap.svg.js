@@ -39,20 +39,9 @@ GeoMap.prototype = {
     this.shapes.remove();
   },
   load: function(json){
-    var paths = json2path(json);
-    this.paths = paths;
-
-    var onePath = '';
-    paths.forEach(function(p){
-
-      onePath += p;
-
-    });
-
-    this.onePath = onePath;
-
+    this.paths = json2path(json);
   },
-  render: function(isRenderOnePath){
+  render: function(){
     var self = this,
       shapes = self.shapes,
       paths = self.paths,
