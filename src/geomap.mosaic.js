@@ -1,3 +1,35 @@
+GeoMap.isPointInsidePath = function(pts, pt) {
+  var i,
+    j,
+    k,
+    n = pts.length,
+    wn = 0;
+
+  for(i = n-1, j = 0; j < n; i = j, j++) {
+    k = (pt[0] - pts[i][1]) * (pts[j][2] - pts[i][2]) - (pts[j][1] - pts[i][1]) * (pt[1] - pts[i][2]);
+    if((pt[1] >= pts[i][2] && pt[1] <= pts[j][2])||(pt[1] <= pts[i][2] && pt[1] >= pts[j][2])) {
+      if( k < 0){
+        wn++;
+      }else if(k > 0){
+        wn--;
+      }else{
+        if( (pt[1] <= pts[i][2] && pt[1] >= pts[j][2] && pt[0] <= pts[i][1] && pt[0] >= pts[j][1]) ||
+          (pt[1] <= pts[i][2] && pt[1] >= pts[j][2] && pt[0] >= pts[i][1] && pt[0] <= pts[j][1]) ||
+          (pt[1] >= pts[i][2] && pt[1] <= pts[j][2] && pt[0] <= pts[i][1] && pt[0] >= pts[j][1]) ||
+          (pt[1] >= pts[i][2] && pt[1] <= pts[j][2] && pt[0] >= pts[i][1] && pt[0] <= pts[j][1]) ){
+          return 0; //点在多边形边界上
+        }
+      }
+
+    }
+  }
+  if(wn == 0){
+    return 1; //点在多边形外部
+  }else{
+    return -1; //点在多边形内部
+  }
+};
+
 GeoMap.prototype.mosaic = function(cfg) {
 
 	// todo: 需要将render方法的前一半copy过来，在各个path未变换matrix前使用getBBox和isPointInside
@@ -73,6 +105,7 @@ GeoMap.prototype.mosaic = function(cfg) {
   var sideSize = 1;
   var halfSide = sideSize / 2;
 
+  /*
   shapes.forEach(function(v, idx){
   
     if(idx > 30 || idx < 30) return;
@@ -110,10 +143,10 @@ GeoMap.prototype.mosaic = function(cfg) {
     }
   
   });
-
+  */
 
   console.log(arrPos);
-  
+
   arrPos.forEach(function(v){
   
     canvas.circle(v[0], v[1], 5);
