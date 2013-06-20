@@ -8,7 +8,7 @@ var convertor = {
    */
   "formatPoint": function(p){
     return [
-      (p[0] < -168.5 ? p[0] + 360 : p[0]) + 170, 
+      (p[0] < -168.5 ? p[0] + 360 : p[0]) + 170,
       90 - p[1]
     ];
   },
@@ -126,3 +126,5 @@ function json2path(json){
   }
   return pathArray;
 }
+
+
