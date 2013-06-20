@@ -30,9 +30,15 @@ GeoMap.isPointInsidePath = function(pts, pt) {
   }
 };
 
-GeoMap.prototype.mosaic = function(cfg) {
+/*
 
-	// todo: 需要将render方法的前一半copy过来，在各个path未变换matrix前使用getBBox和isPointInside
+ TODO: 部分path是由多个m-z组成的，所以判断每个path时，需要从d属性获取string，截取成数组，然后使用isPointInside
+
+ TODO: 点的间隔需要严格固定！！！
+
+*/
+
+GeoMap.prototype.mosaic = function(cfg) {
 	var deCfg = {
 		fill: '#333',
 		'stroke-width': 0,
@@ -102,17 +108,18 @@ GeoMap.prototype.mosaic = function(cfg) {
 	}
 
   var arrPos = [];
-  var sideSize = 1;
+  var sideSize = 2;
   var halfSide = sideSize / 2;
 
-  /*
+  /**/
   shapes.forEach(function(v, idx){
   
-    if(idx > 30 || idx < 30) return;
+    //if(idx > 30 || idx < 30) return;
+//    if(idx > 30) return false;
 
     var bbox = v.getBBox();
-    var startX = bbox.x;
-    var startY = bbox.y;
+    var startX = ~~( (bbox.x - halfSide) / sideSize ) * sideSize;
+    var startY = ~~( (bbox.y- halfSide) / sideSize ) * sideSize;
     var i, j, oKey;
     var temX, temY;
 
@@ -126,12 +133,13 @@ GeoMap.prototype.mosaic = function(cfg) {
 
         temY = j * sideSize + startY;
 
-        console.log(temX + ' , ' + temY);
+        //console.log(temX + ' , ' + temY);
+        console.log(1);
         
 //        canvas.circle(temX, temY, i);
         
 
-        if(Raphael.isPointInsidePath(v.data('ps'), temX, temY)){
+        if(GeoMap.isPointInsidePath(v.attrs.path, [temX, temY]) != 1){
         //if(v.isPointInside(temX, temY)){
 
           arrPos.push([temX, temY]);
@@ -143,13 +151,15 @@ GeoMap.prototype.mosaic = function(cfg) {
     }
   
   });
-  */
+  /**/
 
-  console.log(arrPos);
 
   arrPos.forEach(function(v){
   
-    canvas.circle(v[0], v[1], 5);
+    canvas.circle(v[0], v[1],0.5).attr({
+      'stroke-width': 0,
+      'fill': '#333'
+    }).scale(2.5,2.5,0,0);
   
   });
 
