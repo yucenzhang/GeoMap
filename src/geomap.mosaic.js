@@ -30,13 +30,6 @@ GeoMap.isPointInsidePath = function(pts, pt) {
   }
 };
 
-/*
-
- TODO: 部分path是由多个m-z组成的，所以判断每个path时，需要从d属性获取string，截取成数组，然后使用isPointInside
-
- TODO: 点的间隔需要严格固定！！！
-
-*/
 
 GeoMap.prototype.mosaic = function(cfg) {
 	var deCfg = {
@@ -108,7 +101,7 @@ GeoMap.prototype.mosaic = function(cfg) {
 	}
 
   var arrPos = [];
-  var sideSize = 2;
+  var sideSize = 4;
   var halfSide = sideSize / 2;
 
   /**/
@@ -120,16 +113,18 @@ GeoMap.prototype.mosaic = function(cfg) {
     var bbox = v.getBBox();
     var startX = ~~( (bbox.x - halfSide) / sideSize ) * sideSize;
     var startY = ~~( (bbox.y- halfSide) / sideSize ) * sideSize;
+    //var startX = (bbox.x).toFixed(0) * 1;
+    //var startY = (bbox.y).toFixed(0) * 1;
     var i, j, oKey;
     var temX, temY;
 
     //console.log(bbox);
 
-    for(i = 0; i * sideSize < bbox.width; i++){
+    for(i = 0; i * sideSize + startX <= bbox.x2; i++){
       
       temX = i * sideSize + startX;
 
-      for(j = 0; j * sideSize < bbox.height; j++){
+      for(j = 0; j * sideSize + startY <= bbox.y2; j++){
 
         temY = j * sideSize + startY;
 
@@ -155,12 +150,18 @@ GeoMap.prototype.mosaic = function(cfg) {
 
 
   arrPos.forEach(function(v){
-  
-    canvas.circle(v[0], v[1],0.5).attr({
+  /*
+    canvas.circle(v[0], v[1], 1.5).attr({
       'stroke-width': 0,
       'fill': '#333'
     }).scale(2.5,2.5,0,0);
-  
+  */
+    
+    canvas.rect(v[0] - 1, v[1] - 1, 2.5, 2.5).attr({
+      'stroke-width': 0,
+      'fill': '#999'
+    }).scale(2.5, 2.5, 0, 0);
+
   });
 
 
