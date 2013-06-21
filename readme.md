@@ -109,8 +109,6 @@ map.config.scale = null;
 map.config.offset = null;
 map.load(data_2);   //载入新数据
 map.render();   //重绘
-
-
 ```
 
 属性绑定：
