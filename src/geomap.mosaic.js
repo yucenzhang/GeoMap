@@ -102,7 +102,7 @@ GeoMap.prototype.mosaic = function() {
     temX,
     temY;
 
-  shapes.forEach(function(v){
+  $.each(shapes, function(k, v){
 
     bbox = v.getBBox();
     startX = ~~( (bbox.x - halfSide) / sideSize ) * sideSize;
@@ -111,19 +111,13 @@ GeoMap.prototype.mosaic = function() {
     temX, temY;
 
     for(i = 0; i * sideSize + startX <= bbox.x2; i++){
-      
       temX = i * sideSize + startX;
-
       for(j = 0; j * sideSize + startY <= bbox.y2; j++){
-
         temY = j * sideSize + startY;
-
         if(GeoMap.isPointInsidePath(v.attrs.path, [temX, temY]) != 1){
           arrPos.push([temX, temY]);
         }
-
       }
-
     }
   
   });
