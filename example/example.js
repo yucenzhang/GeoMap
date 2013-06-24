@@ -10,18 +10,38 @@ $(function(){
     dataType: 'json'
   }).done(function(data){
     m1 = geodemo(data, '#map', {x:2.5,y:3}, null);
+
+
+      //绘制一个马赛克效果的地图
+      /*
+      mosaicMap = new GeoMap({
+        container: '#mosaic-map',
+        background: '#fff',
+        mapStyle:{
+          'stroke-width': 0,
+          fill: '#999'
+        },
+        scale: {x:2.5, y:2.5}
+      });
+
+      mosaicMap.load(data);
+
+      mosaicMap.mosaic();
+      */
   });
   $.ajax({
-    url: '../json/0.json',
+    url: '../json/china.geo.json',
     dataType: 'json'
   }).done(function(data){
-    map = geodemo(data, '#chinamap', {x:5.9, y:8.1}, null);
-    map.shapes.click(function(){
+    map3 = geodemo(data, '#chinamap', {x:5.9,y:8.1}, null);
+
+    map3.shapes.click(function(){
       var id = this.data('id');
       $.ajax({
         url: '../json/' + id + '.json',
         dataType: 'json'
       }).done(function(data){
+          m2.clear();
           m2.config.scale = null;
           m2.config.offset = null;
           m2.load(data);
@@ -29,6 +49,7 @@ $(function(){
       });
     });
   });
+
 });
 
 function geodemo(data, container, scale, offset){
@@ -36,31 +57,40 @@ function geodemo(data, container, scale, offset){
       container: container,
       scale: scale,
       offset: offset,
-      background: '#eee'
+      background: '#fff',
+      mapStyle: {
+        fill: '#ddd',
+        stroke: '#fff'
+      }
     }),
     tooltip = $('#tooltip');
   map.load(data);
   map.render();
   map.setPoint({x: 116.4551, y: 40.2539}).attr('r', 5);
-  map.shapes.hover(function(e){
+  map.shapes.hover(function(){
     var self = this;
     self.animate({
       fill: '#369'
     },100);
   },function(){
     this.animate({
-      fill: '#fff'
+      fill: '#ddd'
     },100)
   }).mousemove(function(e){
+      
+    e = $.event.fix(e);
+
       var self = this,
-        $win = $(window),
-        top = $win.scrollTop() + e.clientY,
-        left = $win.scrollLeft() + e.clientX,
-        pos = map.getGeoPosition([e.layerX + map.config.offset.x, e.layerY + map.config.offset.y]);
+        top = e.pageY,
+        left = e.pageX,
+        box = map.container.offset(),
+        boxTop = top - box.top,
+        boxLeft = left - box.left,
+        pos = map.getGeoPosition([boxLeft + map.config.offset.x, boxTop + map.config.offset.y]);
 
       tooltip.html(self.data('properties').name + '<br />指针坐标：<br />lng = ' + pos[0].toFixed(2) + '<br />lat = ' + pos[1].toFixed(2)).css({
-        "top" : top + 20,
-        "left" : left + 20,
+        "top" : top + 10,
+        "left" : left + 10,
         "line-height" : "200%",
         "font-size": "12px"
       }).show();
