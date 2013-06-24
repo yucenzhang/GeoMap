@@ -31,13 +31,7 @@ GeoMap.isPointInsidePath = function(pts, pt) {
 };
 
 
-GeoMap.prototype.mosaic = function(cfg) {
-	var deCfg = {
-		fill: '#333',
-		'stroke-width': 0,
-		opacity: 0.8,
-		sideSize: 10
-	};
+GeoMap.prototype.mosaic = function() {
 
 	var self = this,
 	shapes = self.shapes,
@@ -48,17 +42,16 @@ GeoMap.prototype.mosaic = function(cfg) {
 	offset = config.offset,
 	scale = config.scale,
 	background = config.background,
-	crossline = config.crossline,
 	width = self.width,
 	height = self.height,
-	left = self.left + 5,
-	top = self.top + 7,
 	mapleft = convertor.xmin,
 	maptop = convertor.ymin,
 	mapwidth = convertor.xmax - convertor.xmin,
 	mapheight = convertor.ymax - convertor.ymin,
 	aPath = null,
-	linehead, linex, liney, back, i, len, currentPath;
+  sideSize = config.sideSize,
+  halfSide = sideSize / 2,
+	back, i, len, currentPath;
 
 	if (!scale) {
 		var temx = width / mapwidth,
@@ -100,25 +93,22 @@ GeoMap.prototype.mosaic = function(cfg) {
 		shapes.push(aPath);
 	}
 
-  var arrPos = [];
-  var sideSize = 4;
-  var halfSide = sideSize / 2;
+  var arrPos = [],
+    bbox,
+    startX,
+    startY,
+    i,
+    j,
+    temX,
+    temY;
 
-  /**/
-  shapes.forEach(function(v, idx){
-  
-    //if(idx > 30 || idx < 30) return;
-//    if(idx > 30) return false;
+  shapes.forEach(function(v){
 
-    var bbox = v.getBBox();
-    var startX = ~~( (bbox.x - halfSide) / sideSize ) * sideSize;
-    var startY = ~~( (bbox.y- halfSide) / sideSize ) * sideSize;
-    //var startX = (bbox.x).toFixed(0) * 1;
-    //var startY = (bbox.y).toFixed(0) * 1;
-    var i, j, oKey;
-    var temX, temY;
-
-    //console.log(bbox);
+    bbox = v.getBBox();
+    startX = ~~( (bbox.x - halfSide) / sideSize ) * sideSize;
+    startY = ~~( (bbox.y- halfSide) / sideSize ) * sideSize;
+    i, j;
+    temX, temY;
 
     for(i = 0; i * sideSize + startX <= bbox.x2; i++){
       
@@ -128,17 +118,8 @@ GeoMap.prototype.mosaic = function(cfg) {
 
         temY = j * sideSize + startY;
 
-        //console.log(temX + ' , ' + temY);
-        console.log(1);
-        
-//        canvas.circle(temX, temY, i);
-        
-
         if(GeoMap.isPointInsidePath(v.attrs.path, [temX, temY]) != 1){
-        //if(v.isPointInside(temX, temY)){
-
           arrPos.push([temX, temY]);
-
         }
 
       }
@@ -146,35 +127,14 @@ GeoMap.prototype.mosaic = function(cfg) {
     }
   
   });
-  /**/
-
 
   arrPos.forEach(function(v){
-  /*
-    canvas.circle(v[0], v[1], 1.5).attr({
-      'stroke-width': 0,
-      'fill': '#333'
-    }).scale(2.5,2.5,0,0);
-  */
-    
-    canvas.rect(v[0] - 1, v[1] - 1, 2.5, 2.5).attr({
-      'stroke-width': 0,
-      'fill': '#999'
-    }).scale(2.5, 2.5, 0, 0);
+
+    canvas.rect(v[0] - 1, v[1] - 1, sideSize * 0.8, sideSize * 0.8)
+      .attr(style)
+      .scale(scale.x, scale.y, offset.x, offset.y);
 
   });
-
-
-  /*
-
-	if (Raphael.svg) {
-		canvas.setViewBox(offset.x, offset.y, width, height, false);
-		shapes.attr(style).scale(scale.x, scale.y, mapleft, maptop);
-	} else {
-		shapes.attr(style).translate(offset.x - 450, offset.y - 50).scale(scale.x, scale.y, mapleft, maptop);
-	}
-
-  */
 
 };
 
