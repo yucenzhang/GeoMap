@@ -13,7 +13,8 @@ var GeoMap = function(cfg){
         enable: false,
         color: '#ccc'
       },
-      background:'#fff'
+      background:'#fff',
+      sideSize: 4
     };
 
   $.extend(true, defaultCfg, cfg);
