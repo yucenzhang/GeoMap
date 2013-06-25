@@ -1,8 +1,4 @@
 var convertor = {
-  "xmin": 360,
-  "xmax": 0,
-  "ymin": 180,
-  "ymax": 0,
   /*!Private
       让阿拉斯加地区在地图右侧显示
    */
@@ -15,12 +11,8 @@ var convertor = {
   "makePoint": function(p){
     var self = this,
       point = self.formatPoint(p),
-      x = point[0],
-      y = point[1];
-    if(self.xmin > x) self.xmin = x;
-    if(self.xmax < x) self.xmax = x;
-    if(self.ymin > y) self.ymin = y;
-    if(self.ymax < y) self.ymax = y;
+      x = (point[0] - convertor.offset.x) * convertor.scale.x,
+      y = (point[1] - convertor.offset.y) * convertor.scale.y;
     return [x, y];
   },
   "Point": function(coordinates){
@@ -83,7 +75,7 @@ var convertor = {
   }
 };
 
-function json2path(json){
+function json2path(json, obj){
   var
     shapes = json.features,
     shapeType,
@@ -96,10 +88,34 @@ function json2path(json){
     val,
     shape;
 
-  convertor.xmin = 360;
-  convertor.xmax = 0;
-  convertor.ymin = 180;
-  convertor.ymax = 0;
+  convertor.scale = null;
+  convertor.offset = null;
+
+  if(!obj.config.offset){
+    obj.offset = {
+      x: json.srcSize.left,
+      y: json.srcSize.top
+    };
+  }else{
+    obj.offset.x = json.srcSize.left + obj.config.offset.x;
+    obj.offset.y = json.srcSize.top + obj.config.offset.y;
+  }
+
+  if(!obj.config.scale){
+    var temx = obj.width / json.srcSize.width,
+      temy = obj.height / json.srcSize.height;
+    temx > temy ? temx = temy : temy = temx;
+    temx = temy * 0.73;
+    obj.scale = {
+      x: temx,
+      y: temy
+    };
+  }else{
+    obj.scale = obj.offset.scale;
+  }
+
+  convertor.scale = obj.scale;
+  convertor.offset = obj.offset;
 
   for(i = 0, len = shapes.length; i < len; i++){
     shape = shapes[i];
@@ -113,6 +129,7 @@ function json2path(json){
       }
     }
   }
+
   function pushApath(gm, shape){
     shapeType = gm.type;
     shapeCoordinates = gm.coordinates;

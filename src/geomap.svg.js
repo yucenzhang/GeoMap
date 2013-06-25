@@ -17,6 +17,9 @@ var GeoMap = function(cfg){
 
   self.container = $(defaultCfg.container);
 
+  self.offset = self.defaultCfg.offset;
+  self.scale = self.defaultCfg.scale;
+
   if(self.container.length == 0){
     throw new Error('map container is not defined!');
   }
@@ -31,10 +34,12 @@ var GeoMap = function(cfg){
 
 GeoMap.prototype = {
   clear: function(){
+    this.offset = null;
+    this.scale = null;
     this.shapes.remove();
   },
   load: function(json){
-    this.paths = json2path(json);
+    this.paths = json2path(json, this);
   },
   render: function(){
     var self = this,
@@ -43,105 +48,38 @@ GeoMap.prototype = {
       canvas = self.canvas,
       config = self.config,
       style = config.mapStyle,
-      offset = config.offset,
-      scale = config.scale,
-      background = config.background,
-      width = self.width,
-      height = self.height,
-      mapleft = convertor.xmin,
-      maptop = convertor.ymin,
-      mapwidth = convertor.xmax - convertor.xmin,
-      mapheight = convertor.ymax - convertor.ymin,
-      aPath = null, back, i, len, currentPath;
-
-    if(!scale){
-      var temx = width / mapwidth,
-        temy = height / mapheight;
-      temx > temy ? temx = temy : temy = temx;
-      temx = temy * 0.73;
-      self.config.scale = scale = {
-        x: temx,
-        y: temy
-      };
-    }
-
-    if(!offset){
-      self.config.offset = offset = {
-        x: mapleft,
-        y: maptop
-      };
-    }
-
-    back = canvas.rect(mapleft, maptop, mapwidth, mapheight).scale(scale.x, scale.y, 0, 0).attr({
-      'fill': background, 'stroke-width': 0
-    });
+      aPath = null, i, len, currentPath;
 
     for(i = 0, len = paths.length; i < len; i++){
       currentPath = paths[i];
       if(currentPath.type == 'point' || currentPath.type == 'MultiPoint'){
         //TODO
       }else{
-        aPath = canvas.path(currentPath.path).data({'properties': currentPath.properties, 'id': currentPath.id});
+        aPath = canvas.path(currentPath.path).data({'properties': currentPath.properties, 'id': currentPath.id}).attr(style);
       }
       shapes.push(aPath);
     }
-
-    //if(Raphael.svg){
-
-     // canvas.setViewBox(offset.x, offset.y, width, height, false);
-     // shapes.attr(style).scale(scale.x, scale.y, mapleft, maptop);
-   //  shapes.attr(style).scale(scale.x, scale.y, 0, 0).translate(-offset.x, -offset.y);
-    //}else{
-      //shapes.attr(style).translate(offset.x - 450, offset.y - 50).scale(scale.x, scale.y, mapleft, maptop);
-    //shapes.attr(style).translate(-offset.x, -offset.y).scale(scale.x, scale.y, mapleft, maptop);
-    //}
-
-    shapes.attr(style).translate(-offset.x, -offset.y).scale(scale.x, scale.y, mapleft, maptop);
 
   },
   /*!
       将平面上的一个点的坐标，转换成实际经纬度坐标
    */
   getGeoPosition: function(p){
-    var x1 = p[0],
-      y1 = p[1],
-      m = this.shapes[0].matrix,
-      x, y,
-      a = m.a,
-      b = m.b,
-      c = m.c,
-      d = m.d,
-      e = m.e + this.config.offset.x,
-      f = m.f + this.config.offset.y;
+    var self = this,
+      x = p[0],
+      y = p[1];
 
-    y = (y1 - f - x1 / a * b + e / a * b)/(d - c / a * b);
-    x = (x1 - e - y * c) / a;
-
-    y = 90 - y;
-    x = x - 170;
+    x = x / self.scale.x + self.offset.x - 170;
     x = x > 180 ? x - 360 : x;
+    y = 90 - (y / self.scale.y + self.offset.y);
 
-//    x = e / a;
-//    y = f / d;
-
-    if(Raphael.svg){
-      return [x, y];
-    }
-    return [x + 1, y - 1];
+    return [x, y];
   },
   geo2pos: function(p){
-    var	self = this,
-      matrixTrans = self.shapes[0].matrix;//.clone();
-//    matrixTrans.e += this.config.offset.x;
- //   matrixTrans.f += this.config.offset.y;
-    if(Raphael.svg){
-      p = convertor.makePoint([p.x, p.y]);
-    }else{
-      p = convertor.makePoint([p.x - 1, p.y + 1]);
-    }
-    //通过matrix去计算点变换后的坐标
-    p[0] = matrixTrans.x(p[0], p[1]);
-    p[1] = matrixTrans.y(p[0], p[1]);
+    var self = this;
+    convertor.offset = self.offset;
+    convertor.scale = self.scale;
+    p = convertor.makePoint([p.x, p.y]);
     return p;
   },
   setPoint: function(p){
@@ -156,11 +94,11 @@ GeoMap.prototype = {
         "stroke": "#238CC3",
         "stroke-width": 0,
         "stroke-linejoin": "round"
-      },
-      matrixTrans = self.shapes[0].matrix;
+      };
     p = self.geo2pos(p);
+    p = {x:p[0],y:p[1];}
     $.extend(true, a, p);
-    return self.canvas.circle(p[0], p[1], a.r).attr(a);
+    return self.canvas.circle(p.x, p.y, a.r).attr(a);
   }
 };
 
