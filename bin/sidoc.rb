@@ -67,7 +67,6 @@ loader.file_name_list = %W(
     prefix
     convertor.js
     svg.js
-    mosaic.js
     suffix
 )
 
