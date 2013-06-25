@@ -1,5 +1,5 @@
 /*
- * GeoMap v0.4.8
+ * GeoMap v0.4.7
  * https://github.com/x6doooo/GeoMap
  *
  * Copyright 2013 Dx. Yang
@@ -7,23 +7,31 @@
  */
 
 (function($, undefined){
-var version = "0.4.8"
+var version = "0.4.7"
 
 var convertor = {
+  "xmin": 360,
+  "xmax": 0,
+  "ymin": 180,
+  "ymax": 0,
   /*!Private
       让阿拉斯加地区在地图右侧显示
    */
   "formatPoint": function(p){
     return [
-      (p[0] < -168.5 ? p[0] + 360 : p[0]) + 170,
+      (p[0] < -168.5 ? p[0] + 360 : p[0]) + 170, 
       90 - p[1]
     ];
   },
   "makePoint": function(p){
     var self = this,
       point = self.formatPoint(p),
-      x = (point[0] - convertor.offset.x) * convertor.scale.x,
-      y = (point[1] - convertor.offset.y) * convertor.scale.y;
+      x = point[0],
+      y = point[1];
+    if(self.xmin > x) self.xmin = x;
+    if(self.xmax < x) self.xmax = x;
+    if(self.ymin > y) self.ymin = y;
+    if(self.ymax < y) self.ymax = y;
     return [x, y];
   },
   "Point": function(coordinates){
@@ -86,7 +94,7 @@ var convertor = {
   }
 };
 
-function json2path(json, obj){
+function json2path(json){
   var
     shapes = json.features,
     shapeType,
@@ -99,34 +107,10 @@ function json2path(json, obj){
     val,
     shape;
 
-  convertor.scale = null;
-  convertor.offset = null;
-
-  if(!obj.config.offset){
-    obj.offset = {
-      x: json.srcSize.left,
-      y: json.srcSize.top
-    };
-  }else{
-    obj.offset.x = json.srcSize.left + obj.config.offset.x;
-    obj.offset.y = json.srcSize.top + obj.config.offset.y;
-  }
-
-  if(!obj.config.scale){
-    var temx = obj.width / json.srcSize.width,
-      temy = obj.height / json.srcSize.height;
-    temx > temy ? temx = temy : temy = temx;
-    temx = temy * 0.73;
-    obj.scale = {
-      x: temx,
-      y: temy
-    };
-  }else{
-    obj.scale = obj.offset.scale;
-  }
-
-  convertor.scale = obj.scale;
-  convertor.offset = obj.offset;
+  convertor.xmin = 360;
+  convertor.xmax = 0;
+  convertor.ymin = 180;
+  convertor.ymax = 0;
 
   for(i = 0, len = shapes.length; i < len; i++){
     shape = shapes[i];
@@ -140,7 +124,6 @@ function json2path(json, obj){
       }
     }
   }
-
   function pushApath(gm, shape){
     shapeType = gm.type;
     shapeCoordinates = gm.coordinates;
@@ -154,8 +137,6 @@ function json2path(json, obj){
   }
   return pathArray;
 }
-
-
 var GeoMap = function(cfg){
   var self = this,
     defaultCfg = {
@@ -167,16 +148,16 @@ var GeoMap = function(cfg){
         'stroke': '#999',
         'stroke-width': 0.7
       },
-      background:'#fff',
-      sideSize: 4
+      crossline:{
+        enable: false,
+        color: '#ccc'
+      },
+      background:'#fff'
     };
 
   $.extend(true, defaultCfg, cfg);
 
   self.container = $(defaultCfg.container);
-
-  self.offset = self.defaultCfg.offset;
-  self.scale = self.defaultCfg.scale;
 
   if(self.container.length == 0){
     throw new Error('map container is not defined!');
@@ -184,6 +165,8 @@ var GeoMap = function(cfg){
 
   self.width = defaultCfg.width || self.container.width();
   self.height = defaultCfg.height || self.container.height();
+  self.left = self.container.offset().left;
+  self.top = self.container.offset().top;
   self.canvas = new Raphael(self.container.get(0), self.width, self.height);
   self.shapes = self.canvas.set();
   self.config = defaultCfg;
@@ -191,13 +174,8 @@ var GeoMap = function(cfg){
 };
 
 GeoMap.prototype = {
-  clear: function(){
-    this.offset = null;
-    this.scale = null;
-    this.shapes.remove();
-  },
   load: function(json){
-    this.paths = json2path(json, this);
+    this.paths = json2path(json);
   },
   render: function(){
     var self = this,
@@ -206,38 +184,137 @@ GeoMap.prototype = {
       canvas = self.canvas,
       config = self.config,
       style = config.mapStyle,
-      aPath = null, i, len, currentPath;
+      offset = config.offset,
+      scale = config.scale,
+      background = config.background,
+      crossline = config.crossline,
+      width = self.width,
+      height = self.height,
+      left = self.left + 5,
+      top = self.top + 7,
+      mapleft = convertor.xmin,
+      maptop = convertor.ymin,
+      mapwidth = convertor.xmax - convertor.xmin,
+      mapheight = convertor.ymax - convertor.ymin,
+      aPath = null, linehead, linex, liney, back, i, len, currentPath;
+
+    if(shapes.length != 0){
+      //重复调用render时，先清空画布
+      shapes.remove();
+    }
+
+    if(!scale){
+      var temx = width / mapwidth,
+        temy = height / mapheight;
+      temx > temy ? temx = temy : temy = temx;
+      temx = temy * 0.73;
+      self.config.scale = scale = {
+        x: temx,
+        y: temy
+      };
+    }
+
+    if(!offset){
+      self.config.offset = offset = {
+        x: mapleft,
+        y: maptop
+      };
+    }
+
+    back = canvas.rect(mapleft, maptop, mapwidth, mapheight).scale(scale.x, scale.y, 0, 0).attr({
+      'fill': background, 'stroke-width': 0
+    });
+
+    linehead = 'M' + (mapleft) + ',' + (maptop);
+    linex = linehead + 'H' + convertor.xmax * scale.x;
+    liney = linehead + 'V' + convertor.ymax * scale.y;
+
+    self.crosslineX = canvas.path(linex).attr({'stroke': crossline.color, 'stroke-width': '1px'}).hide();
+    self.crosslineY = canvas.path(liney).attr({'stroke': crossline.color, 'stroke-width': '1px'}).hide();
 
     for(i = 0, len = paths.length; i < len; i++){
       currentPath = paths[i];
       if(currentPath.type == 'point' || currentPath.type == 'MultiPoint'){
         //TODO
       }else{
-        aPath = canvas.path(currentPath.path).data({'properties': currentPath.properties, 'id': currentPath.id}).attr(style);
+        aPath = canvas.path(currentPath.path).data({'properties': currentPath.properties, 'id': currentPath.id});
       }
       shapes.push(aPath);
     }
 
+    if(Raphael.svg){
+      canvas.setViewBox(offset.x, offset.y, width, height, false);
+      shapes.attr(style).scale(scale.x, scale.y, mapleft, maptop);
+    }else{
+      shapes.attr(style).translate(offset.x - 450, offset.y - 50).scale(scale.x, scale.y, mapleft, maptop);
+    }
+
+    //TODO: crossline的位置计算，由于要做一点偏移，所以偏移量要考虑到缩放问题，类似getGeoPosition方法，计算出图上偏移的实际值
+    if(crossline.enable === true){
+      shapes.mouseover(function(){
+        showCrossLine();
+      }).mousemove(function(e){
+          moveCrossLine(e);
+        }).mouseout(function(){
+          hideCrossLine();
+        });
+      back.mouseover(function(){
+        showCrossLine();
+      }).mousemove(function(e){
+          moveCrossLine(e);
+        }).mouseout(function(){
+          hideCrossLine();
+        });
+    }
+    function showCrossLine(){
+      self.crosslineX.toFront().show();
+      self.crosslineY.toFront().show();
+    }
+    function moveCrossLine(e){
+      var pos = getEventPos(e);
+      self.crosslineX.transform('T0,'+pos.y);
+      self.crosslineY.transform('T'+ pos.x + ',0');
+    }
+    function hideCrossLine(){
+      self.crosslineX.hide();
+      self.crosslineY.hide();
+    }
+    function getEventPos(e){
+      return {
+        x: parseInt(e.pageX - left) + 0.4,
+        y: parseInt(e.pageY - top) + 0.4
+      };
+    }
   },
   /*!
       将平面上的一个点的坐标，转换成实际经纬度坐标
    */
   getGeoPosition: function(p){
-    var self = this,
-      x = p[0],
-      y = p[1];
+    var x1 = p[0],
+      y1 = p[1],
+      m = this.shapes[0].matrix,
+      x, y,
+      a = m.a,
+      b = m.b,
+      c = m.c,
+      d = m.d,
+      e = m.e,
+      f = m.f;
 
-    x = x / self.scale.x + self.offset.x - 170;
+    y = (y1 - f - x1 / a * b + e / a * b)/(d - c / a * b);
+    x = (x1 - e - y * c) / a;
+    y = 90 - y;
+    x = x - 170;
     x = x > 180 ? x - 360 : x;
-    y = 90 - (y / self.scale.y + self.offset.y);
-
     return [x, y];
   },
   geo2pos: function(p){
-    var self = this;
-    convertor.offset = self.offset;
-    convertor.scale = self.scale;
+    var	self = this,
+      matrixTrans = self.shapes[0].matrix;
     p = convertor.makePoint([p.x, p.y]);
+    //通过matrix去计算点变换后的坐标
+    p[0] = matrixTrans.x(p[0], p[1]);
+    p[1] = matrixTrans.y(p[0], p[1]);
     return p;
   },
   setPoint: function(p){
@@ -252,11 +329,11 @@ GeoMap.prototype = {
         "stroke": "#238CC3",
         "stroke-width": 0,
         "stroke-linejoin": "round"
-      };
+      },
+      matrixTrans = self.shapes[0].matrix;
     p = self.geo2pos(p);
-    p = {x:p[0],y:p[1];}
     $.extend(true, a, p);
-    return self.canvas.circle(p.x, p.y, a.r).attr(a);
+    return self.canvas.circle(p[0], p[1], a.r).attr(a);
   }
 };
 

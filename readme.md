@@ -105,8 +105,8 @@ map.render();
 map.clear();
 //重新绘制其他地区数据
 //重绘需要注意：如果不确定偏移和缩放是否能够沿用，最好清空一次，让load方法重新计算这两个值
-map.config.scale = null;
-map.config.offset = null;
+map.scale = null;
+map.offset = null;
 map.load(data_2);   //载入新数据
 map.render();   //重绘
 ```
