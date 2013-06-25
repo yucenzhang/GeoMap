@@ -6,10 +6,10 @@ $(function(){
     tooltip = $('#tooltip');
   // 创建地图画布
   $.ajax({
-    url: '../json/world.geo.json',
+    url: '../json/world.geo.json?23322323',
     dataType: 'json'
   }).done(function(data){
-    m1 = geodemo(data, '#map', {x:2.5,y:3}, null);
+    m1 = geodemo(data, '#map', null, null);
 
 
       //绘制一个马赛克效果的地图
@@ -33,17 +33,17 @@ $(function(){
     url: '../json/china.geo.json',
     dataType: 'json'
   }).done(function(data){
-    map3 = geodemo(data, '#chinamap', {x:5.9,y:8.1}, null);
+    map3 = geodemo(data, '#chinamap', null, null);
 
     map3.shapes.click(function(){
       var id = this.data('id');
       $.ajax({
-        url: '../json/' + id + '.json',
+        url: '../json/' + id + '.geo.json',
         dataType: 'json'
       }).done(function(data){
           m2.clear();
-          m2.config.scale = null;
-          m2.config.offset = null;
+          m2.scale = null;
+          m2.offset = null;
           m2.load(data);
           m2.render();
       });
@@ -86,7 +86,7 @@ function geodemo(data, container, scale, offset){
         box = map.container.offset(),
         boxTop = top - box.top,
         boxLeft = left - box.left,
-        pos = map.getGeoPosition([boxLeft + map.config.offset.x, boxTop + map.config.offset.y]);
+        pos = map.getGeoPosition([boxLeft, boxTop]);
 
       tooltip.html(self.data('properties').name + '<br />指针坐标：<br />lng = ' + pos[0].toFixed(2) + '<br />lat = ' + pos[1].toFixed(2)).css({
         "top" : top + 10,
