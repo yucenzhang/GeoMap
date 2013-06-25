@@ -39,8 +39,8 @@ GeoMap.prototype.mosaic = function() {
 	canvas = self.canvas,
 	config = self.config,
 	style = config.mapStyle,
-	offset = config.offset,
-	scale = config.scale,
+	offset = self.offset,
+	scale = self.scale,
 	background = config.background,
 	width = self.width,
 	height = self.height,
@@ -53,29 +53,12 @@ GeoMap.prototype.mosaic = function() {
   halfSide = sideSize / 2,
 	back, i, len, currentPath;
 
-	if (!scale) {
-		var temx = width / mapwidth,
-		temy = height / mapheight;
-		temx > temy ? temx = temy: temy = temx;
-		temx = temy * 0.73;
-		self.config.scale = scale = {
-			x: temx,
-			y: temy
-		};
-	}
-
-	if (!offset) {
-		self.config.offset = offset = {
-			x: mapleft,
-			y: maptop
-		};
-	}
-
+/*
 	back = canvas.rect(mapleft, maptop, mapwidth, mapheight).scale(scale.x, scale.y, 0, 0).attr({
 		'fill': background,
 		'stroke-width': 0
 	});
-
+*/
 	for (i = 0, len = paths.length; i < len; i++) {
 		currentPath = paths[i];
 		if (currentPath.type == 'point' || currentPath.type == 'MultiPoint') {
@@ -125,8 +108,8 @@ GeoMap.prototype.mosaic = function() {
   arrPos.forEach(function(v){
 
     canvas.rect(v[0] - 1, v[1] - 1, sideSize * 0.8, sideSize * 0.8)
-      .attr(style)
-      .scale(scale.x, scale.y, offset.x, offset.y);
+      .attr(style);
+      //.scale(scale.x, scale.y, offset.x, offset.y);
 
   });
 
