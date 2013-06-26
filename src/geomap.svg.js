@@ -17,8 +17,8 @@ var GeoMap = function(cfg){
 
   self.container = $(defaultCfg.container);
 
-  self.offset = self.defaultCfg.offset;
-  self.scale = self.defaultCfg.scale;
+  self.offset = defaultCfg.offset;
+  self.scale = defaultCfg.scale;
 
   if(self.container.length == 0){
     throw new Error('map container is not defined!');

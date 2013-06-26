@@ -1,5 +1,5 @@
 /*
- * GeoMap v0.4.8
+ * GeoMap v0.4.9
  * https://github.com/x6doooo/GeoMap
  *
  * Copyright 2013 Dx. Yang
@@ -7,7 +7,113 @@
  */
 
 (function($, undefined){
-var version = "0.4.8"
+var version = "0.4.9"
+
+var convertor_parse = {
+  "formatPoint": function(p){
+    return [
+      (p[0] < -168.5 ? p[0] + 360 : p[0]) + 170,
+      90 - p[1]
+    ];
+  },
+  "makePoint": function(p){
+    var self = this,
+      point = self.formatPoint(p),
+      x = point[0],
+      y = point[1];
+    if(self.xmin > x) self.xmin = x;
+    if(self.xmax < x) self.xmax = x;
+    if(self.ymin > y) self.ymin = y;
+    if(self.ymax < y) self.ymax = y;
+  },
+  "Point": function(coordinates){
+    this.makePoint(coordinates);
+  },
+  "LineString": function(coordinates){
+    var self = this,
+      i = 0,
+      len = coordinates.length;
+
+    for( ; i < len; i++){
+      self.makePoint(coordinates[i]);
+    }
+  },
+  "Polygon": function(coordinates){
+    var i = 0,
+      len = coordinates.length;
+
+    for(; i < len; i++){
+      convertor.LineString(coordinates[i]);
+    }
+  },
+  "MultiPoint": function(coordinates){
+    var i = 0,
+      len = coordinates.length;
+    for(; i < len; i++){
+      convertor.Point(coordinates[i]);
+    }
+  },
+  "MultiLineString": function(coordinates){
+    var i = 0,
+      len = coordinates.length;
+    for(; i < len; i++){
+      convertor.LineString(coordinates[i]);
+    }
+  },
+  "MultiPolygon": function(coordinates){
+    var i = 0,
+      len = coordinates.length;
+    for(; i < len; i++){
+      convertor.Polygon(coordinates[i]);
+    }
+  }
+};
+
+function parseSrcSize(json){
+  var
+    shapes = json.features,
+    shapeType,
+    shapeCoordinates,
+    geometries,
+    i, j,
+    len, len2,
+    val,
+    shape;
+
+  convertor_parse.xmin = 360;
+  convertor_parse.xmax = 0;
+  convertor_parse.ymin = 180;
+  convertor_parse.ymax = 0;
+
+  for(i = 0, len = shapes.length; i < len; i++){
+    shape = shapes[i];
+    if(shape.type == 'Feature'){
+      pushApath(shape.geometry, shape);
+    }else if(shape.type = 'GeometryCollection'){
+      geometries = shape.geometries;
+      for(j = 0, len2 = geometries.length; j < len2; j++){
+        val = geometries[j];
+        pushApath(val, val);
+      }
+    }
+  }
+  function pushApath(gm){
+    shapeType = gm.type;
+    shapeCoordinates = gm.coordinates;
+    convertor_parse[shapeType](shapeCoordinates);
+  }
+
+  json.srcSize = {
+    left: convertor.xmin.toFixed(4) * 1,
+    top: convertor.ymin.toFixed(4) * 1,
+    width: (convertor.xmax - convertor.xmin).toFixed(4) * 1,
+    height: (convertor.ymax - convertor.ymin).toFixed(4) * 1
+  };
+
+  return json;
+
+}
+
 
 var convertor = {
   /*!Private
@@ -102,12 +208,18 @@ function json2path(json, obj){
   convertor.scale = null;
   convertor.offset = null;
 
+  if((!obj.config.scale || !obj.config.offset) && !json.srcSize){
+
+    parseSrcSize(json);
+
+  }
+
   if(!obj.config.offset){
     obj.offset = {
       x: json.srcSize.left,
       y: json.srcSize.top
     };
-  }else{
+  }else if(json.srcSize){
     obj.offset.x = json.srcSize.left + obj.config.offset.x;
     obj.offset.y = json.srcSize.top + obj.config.offset.y;
   }
@@ -155,7 +267,6 @@ function json2path(json, obj){
   return pathArray;
 }
 
-
 var GeoMap = function(cfg){
   var self = this,
     defaultCfg = {
@@ -175,8 +286,8 @@ var GeoMap = function(cfg){
 
   self.container = $(defaultCfg.container);
 
-  self.offset = self.defaultCfg.offset;
-  self.scale = self.defaultCfg.scale;
+  self.offset = defaultCfg.offset;
+  self.scale = defaultCfg.scale;
 
   if(self.container.length == 0){
     throw new Error('map container is not defined!');
