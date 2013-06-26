@@ -254,7 +254,7 @@ GeoMap.prototype = {
         "stroke-linejoin": "round"
       };
     p = self.geo2pos(p);
-    p = {x:p[0],y:p[1];}
+    p = {x:p[0],y:p[1]};
     $.extend(true, a, p);
     return self.canvas.circle(p.x, p.y, a.r).attr(a);
   }
