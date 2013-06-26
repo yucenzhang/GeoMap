@@ -90,8 +90,6 @@ GeoMap.prototype.mosaic = function() {
     bbox = v.getBBox();
     startX = ~~( (bbox.x - halfSide) / sideSize ) * sideSize;
     startY = ~~( (bbox.y- halfSide) / sideSize ) * sideSize;
-    i, j;
-    temX, temY;
 
     for(i = 0; i * sideSize + startX <= bbox.x2; i++){
       temX = i * sideSize + startX;
