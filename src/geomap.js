@@ -1,5 +1,5 @@
 /*
- * GeoMap v0.4.9
+ * GeoMap v0.4.10
  * https://github.com/x6doooo/GeoMap
  *
  * Copyright 2013 Dx. Yang
@@ -7,7 +7,7 @@
  */
 
 (function($, undefined){
-var version = "0.4.9"
+var version = "0.4.10"
 
 var convertor_parse = {
   "formatPoint": function(p){
@@ -43,28 +43,28 @@ var convertor_parse = {
       len = coordinates.length;
 
     for(; i < len; i++){
-      convertor.LineString(coordinates[i]);
+      this.LineString(coordinates[i]);
     }
   },
   "MultiPoint": function(coordinates){
     var i = 0,
       len = coordinates.length;
     for(; i < len; i++){
-      convertor.Point(coordinates[i]);
+      this.Point(coordinates[i]);
     }
   },
   "MultiLineString": function(coordinates){
     var i = 0,
       len = coordinates.length;
     for(; i < len; i++){
-      convertor.LineString(coordinates[i]);
+      this.LineString(coordinates[i]);
     }
   },
   "MultiPolygon": function(coordinates){
     var i = 0,
       len = coordinates.length;
     for(; i < len; i++){
-      convertor.Polygon(coordinates[i]);
+      this.Polygon(coordinates[i]);
     }
   }
 };
@@ -104,10 +104,10 @@ function parseSrcSize(json){
   }
 
   json.srcSize = {
-    left: convertor.xmin.toFixed(4) * 1,
-    top: convertor.ymin.toFixed(4) * 1,
-    width: (convertor.xmax - convertor.xmin).toFixed(4) * 1,
-    height: (convertor.ymax - convertor.ymin).toFixed(4) * 1
+    left: convertor_parse.xmin.toFixed(4) * 1,
+    top: convertor_parse.ymin.toFixed(4) * 1,
+    width: (convertor_parse.xmax - convertor_parse.xmin).toFixed(4) * 1,
+    height: (convertor_parse.ymax - convertor_parse.ymin).toFixed(4) * 1
   };
 
   return json;
@@ -208,13 +208,13 @@ function json2path(json, obj){
   convertor.scale = null;
   convertor.offset = null;
 
-  if((!obj.config.scale || !obj.config.offset) && !json.srcSize){
+  if((!obj.scale || !obj.offset) && !json.srcSize){
 
     parseSrcSize(json);
 
   }
 
-  if(!obj.config.offset){
+  if(!obj.offset){
     obj.offset = {
       x: json.srcSize.left,
       y: json.srcSize.top
@@ -224,7 +224,7 @@ function json2path(json, obj){
     obj.offset.y = json.srcSize.top + obj.config.offset.y;
   }
 
-  if(!obj.config.scale){
+  if(!obj.scale){
     var temx = obj.width / json.srcSize.width,
       temy = obj.height / json.srcSize.height;
     temx > temy ? temx = temy : temy = temx;
@@ -233,8 +233,6 @@ function json2path(json, obj){
       x: temx,
       y: temy
     };
-  }else{
-    obj.scale = obj.offset.scale;
   }
 
   convertor.scale = obj.scale;
