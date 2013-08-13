@@ -132,8 +132,20 @@ point.attr('r', 5);
 ```
 
 计算一个点的实际经纬度：
+
 ```js
 map.getGeoPosition([10, 10]); //=> 页面地图上10,10这个点的实际经纬度坐标
+```
+
+绘制马赛克式地图：（since 0.5.0）
+
+`此方法计算量较大，低版本IE慎用。`
+
+```js
+//加载geoJSON数据
+map.load(json));
+//不使用render方法，直接使用mosaic方法，绘制马赛克式地图 
+map.mosaic();
 ```
 
 
