@@ -30,7 +30,7 @@ GeoMap.isPointInsidePath = function(pts, pt) {
   }
 };
 
-
+//计算耗时较长
 GeoMap.prototype.mosaic = function() {
 
 	var self = this,
@@ -53,12 +53,6 @@ GeoMap.prototype.mosaic = function() {
   halfSide = sideSize / 2,
 	back, i, len, currentPath;
 
-/*
-	back = canvas.rect(mapleft, maptop, mapwidth, mapheight).scale(scale.x, scale.y, 0, 0).attr({
-		'fill': background,
-		'stroke-width': 0
-	});
-*/
 	for (i = 0, len = paths.length; i < len; i++) {
 		currentPath = paths[i];
 		if (currentPath.type == 'point' || currentPath.type == 'MultiPoint') {
@@ -105,11 +99,9 @@ GeoMap.prototype.mosaic = function() {
 
   arrPos.forEach(function(v){
 
-    canvas.rect(v[0] - 1, v[1] - 1, sideSize * 0.8, sideSize * 0.8)
-      .attr(style);
+    canvas.rect(v[0] - 1, v[1] - 1, sideSize * 0.8, sideSize * 0.8).attr(style);
       //.scale(scale.x, scale.y, offset.x, offset.y);
 
   });
 
 };
-
