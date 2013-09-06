@@ -31,7 +31,7 @@ GeoMap.isPointInsidePath = function(pts, pt) {
 };
 
 //计算耗时较长
-GeoMap.prototype.mosaic = function() {
+GeoMap.prototype.mosaic = function(proc) {  // proc => 是否使用worker线程
 
 	var self = this,
 	shapes = self.shapes,
