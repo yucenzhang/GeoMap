@@ -79,6 +79,8 @@ GeoMap.prototype = {
     var self = this;
     convertor.offset = self.offset;
     convertor.scale = self.scale;
+    if(typeof p.x != 'number') p.x *= 1;
+    if(typeof p.y != 'number') p.y *= 1;
     p = convertor.makePoint([p.x, p.y]);
     return p;
   },
@@ -99,6 +101,15 @@ GeoMap.prototype = {
     p = {x:p[0],y:p[1]};
     $.extend(true, a, p);
     return self.canvas.circle(p.x, p.y, a.r).attr(a);
+  },
+  drawLineByMapPoints: function(pointsArray){
+    var str = '';
+    var op = ''
+    $.each(pointsArray, function(k, v){
+      op = k == 0 ? 'M' : 'L';
+      str += op + v.attrs.x + ',' + v.attrs.y;
+    });
+    return this.canvas.path(str);
   }
 };
 
