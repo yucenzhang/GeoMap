@@ -102,9 +102,31 @@ GeoMap.prototype = {
     $.extend(true, a, p);
     return self.canvas.circle(p.x, p.y, a.r).attr(a);
   },
+  line: function(type, points){ 
+    // type: 'geo' or 'plane' or 'points', default 'geo'
+    // points: [{x:1,y:1}, {x:2, y:2}, ...]
+    if(typeof type !== 'string'){
+      points = type;
+      type = 'geo';
+    }
+    var makePathString = type == 'geo' ? 
+      function(p){ 
+        return p.x + ',' + p.y;
+      } : function(p){
+        p = geo2pos(p);
+        return p[0] + ',' + p[1];
+      };
+    var str = '';
+    var op = '';
+    $.each(points, function(k, v){
+      op = k == 0 ? 'M' : 'L';
+      str += op + makePathString(v);
+    });
+    return this.canvas.path(str);
+  },
   drawLineByMapPoints: function(pointsArray){
     var str = '';
-    var op = ''
+    var op = '';
     $.each(pointsArray, function(k, v){
       op = k == 0 ? 'M' : 'L';
       str += op + v.attrs.x + ',' + v.attrs.y;
