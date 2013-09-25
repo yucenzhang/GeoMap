@@ -137,6 +137,31 @@ point.attr('r', 5);
 map.getGeoPosition([10, 10]); //=> 页面地图上10,10这个点的实际经纬度坐标
 ```
 
+画线：（since 0.5.3）
+
+```js
+//通过点地图上的点，绘制线段
+
+//假设绘制任意三个点
+p1 = map.setPoint({x: 坐标值, y: 坐标值});
+p2 = map.setPoint({x: 坐标值, y: 坐标值});
+p3 = map.setPoint({x: 坐标值, y: 坐标值});
+
+//将三个点用线段连接起来
+lines = map.drawLineByMapPoints([p1, p2, p3]);
+
+//按数组先后顺序，给线段增加箭头的画法
+lines = map.drawLineByMapPoints([p1, p2, p3], true);
+
+//给线段和箭头设置样式的画法
+lines = map.drawLineByMapPoints([p1, p2, p3], {
+    size: 12,       //箭头大小
+    rad: 8,         //箭头角度
+    color: 'red'    //箭头和线的颜色
+});
+
+```
+
 绘制马赛克式地图：（since 0.5.0）
 
 `此方法计算量较大，低版本IE慎用。`
