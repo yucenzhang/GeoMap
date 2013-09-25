@@ -32,6 +32,27 @@ var GeoMap = function(cfg){
   self.paths = null;
 };
 
+GeoMap.arrow = function(ox, oy, tx, ty, aw){
+  if(Object.prototype.toString.call(aw) == '[object Object]'){
+    var L = aw.size || 10;
+    var cc = aw.rad || 12;
+  }else{
+    var L = 10;
+    var cc = 12;
+  }
+  var pi = Math.PI;
+  var c = pi / cc;
+  var tan_c = Math.tan(c);
+  var dx = tx - ox;
+  var dy = ty - oy;
+  var L0 = Math.sqrt(dx * dx + dy * dy);
+  var p1x = (L * dy * tan_c * (-1) + L0 * dx + L0 * ox - L * dx) / L0;
+  var p1y = (L * dx * tan_c + L0 * dy + L0 * oy - L * dy) / L0;
+  var p2x = (L * dy * tan_c + L0 * dx + L0 * ox -L * dx) / L0;
+  var p2y = (L * dx * tan_c * (-1) + L0 * dy + L0 * oy - L * dy) / L0;
+  return 'M' + tx + ',' + ty + 'L' + p1x + ',' + p1y + 'L' + p2x + ',' + p2y + 'z';
+};
+
 GeoMap.prototype = {
   clear: function(){
     this.offset = null;
@@ -102,6 +123,7 @@ GeoMap.prototype = {
     $.extend(true, a, p);
     return self.canvas.circle(p.x, p.y, a.r).attr(a);
   },
+  //TODO：
   line: function(type, points){ 
     // type: 'geo' or 'plane' or 'points', default 'geo'
     // points: [{x:1,y:1}, {x:2, y:2}, ...]
@@ -124,15 +146,44 @@ GeoMap.prototype = {
     });
     return this.canvas.path(str);
   },
-  drawLineByMapPoints: function(pointsArray){
+  drawLineByMapPoints: function(pointsArray, aw){
     var str = '';
     var op = '';
+    var self = this;
+    var set = self.canvas.set();
     $.each(pointsArray, function(k, v){
       op = k == 0 ? 'M' : 'L';
       str += op + v.attrs.x + ',' + v.attrs.y;
+      //箭头
+      if(op == 'L' && aw){
+        var ot = pointsArray[k - 1].attrs;
+        var ox = ot.x;
+        var oy = ot.y
+        var tt = v.attrs;
+        var tx = tt.x;
+        var ty = tt.y;
+        var as = GeoMap.arrow(ox, oy, tx, ty, aw);
+        set.push(self.canvas.path(as));
+      }
     });
-    return this.canvas.path(str);
+
+    var color = '#08c';
+    if(Object.prototype.toString.call(aw) == '[object Object]'){
+      color = aw.color;
+    }
+
+    return {
+      arrows: set.attr({
+        stroke: color,
+        fill: color
+      }),
+      lines: self.canvas.path(str).attr({
+        stroke: color
+      })
+    };
   }
 };
+
+
 
 //TODO: heat map
