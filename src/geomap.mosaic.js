@@ -20,7 +20,6 @@ GeoMap.isPointInsidePath = function(pts, pt) {
           return 0; //点在多边形边界上
         }
       }
-
     }
   }
   if(wn == 0){

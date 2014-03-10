@@ -1,5 +1,5 @@
 /*
- * GeoMap v0.5.3
+ * GeoMap v0.5.1
  * https://github.com/x6doooo/GeoMap
  *
  * Copyright 2013 Dx. Yang
@@ -7,7 +7,7 @@
  */
 
 (function($, undefined){
-var version = "0.5.3"
+var version = "0.5.1"
 
 var convertor_parse = {
   "formatPoint": function(p){
@@ -448,6 +448,29 @@ GeoMap.prototype = {
         stroke: color
       })
     };
+  },
+  showRegionName: function(){
+    var self = this;
+    var shapes = self.shapes;
+    shapes.forEach(function(v){
+      var properties = v.data('properties');
+      var name = properties.name;
+      var cp = properties.cp || [0, 0];
+      var point = self.geo2pos({
+        x: cp[0],
+        y: cp[1]
+      });
+      if(name == '广东'){
+        point[1] -= 5;
+      }
+      if(name == '澳门'){
+        point[0] -=5;
+      }
+      self.canvas.text(point[0], point[1], name).attr({
+        'font-size':'12px',
+        'fill':'#000'
+      });
+    });
   }
 };
 
