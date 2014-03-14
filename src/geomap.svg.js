@@ -54,6 +54,7 @@ GeoMap.arrow = function(ox, oy, tx, ty, aw){
 };
 
 GeoMap.prototype = {
+  constructor: GeoMap,
   clear: function(){
     this.offset = null;
     this.scale = null;

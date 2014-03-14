@@ -1,5 +1,5 @@
 /*
- * GeoMap v0.5.1
+ * GeoMap v0.5.4
  * https://github.com/x6doooo/GeoMap
  *
  * Copyright 2013 Dx. Yang
@@ -7,7 +7,7 @@
  */
 
 (function($, undefined){
-var version = "0.5.1"
+var version = "0.5.4"
 
 var convertor_parse = {
   "formatPoint": function(p){
@@ -321,6 +321,7 @@ GeoMap.arrow = function(ox, oy, tx, ty, aw){
 };
 
 GeoMap.prototype = {
+  constructor: GeoMap,
   clear: function(){
     this.offset = null;
     this.scale = null;
@@ -499,7 +500,6 @@ GeoMap.isPointInsidePath = function(pts, pt) {
           return 0; //点在多边形边界上
         }
       }
-
     }
   }
   if(wn == 0){
